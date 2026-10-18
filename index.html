@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التوصيل والمخزون الموحد</title>
+    <title>لوحة تحكم البائع والمخزون</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -15,210 +14,162 @@
             to { transform: translateY(0); opacity: 1; }
         }
         .toast-anim { animation: slideIn 0.3s ease-out forwards; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .active-scale:active { transform: scale(0.97); }
     </style>
 </head>
-<body class="min-h-screen pb-20 transition-colors duration-300 bg-slate-100 text-slate-800" id="appBody">
+<body class="min-h-screen pb-20 bg-slate-100 text-slate-800">
 
     <div id="toastContainer" class="fixed top-20 left-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- ================= واجهة البائع الشاملة ================= -->
-    <div id="sellerView" class="hidden max-w-4xl mx-auto">
-        <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
-            <div class="max-w-4xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="bg-indigo-900 p-2 rounded-xl text-xl">🏪</span>
-                    <div>
-                        <h1 class="text-lg font-extrabold">لوحة تحكم البائع والمخزون</h1>
-                        <p class="text-xs text-indigo-200" id="sellerStatus">🟢 متصل بالبث المباشر مع اللفرور</p>
-                    </div>
+    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <span class="bg-indigo-900 p-2 rounded-xl text-xl">🏪</span>
+                <div>
+                    <h1 class="text-lg font-extrabold">لوحة تحكم البائع والمخزون</h1>
+                    <p class="text-xs text-indigo-200">🟢 متصل بالسيرفر مع اللفرور</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="openCourierPreview()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold px-3 py-2 rounded-xl shadow transition">
-                        👁️ فتح صفحة اللفرور للتجربة
-                    </button>
-                    <button onclick="copyCourierLink()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition">
-                        📲 نسخ رابط اللفرور
-                    </button>
-                    <button onclick="changeStoreCode()" class="bg-indigo-800 hover:bg-indigo-900 text-xs px-3 py-2 rounded-xl border border-indigo-500">
-                        🔑 الكود: <span id="displayRoomCode" class="font-bold"></span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="openCourierPage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold px-3 py-2 rounded-xl shadow transition">
+                    👁️ فتح صفحة اللفرور
+                </button>
+                <button onclick="copyCourierLink()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition">
+                    📲 نسخ رابط اللفرور
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-white border-b px-4 py-2 flex gap-2 sticky top-[73px] z-40 shadow-sm">
+        <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition">📦 إدارة التوصيل</button>
+        <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition">☂️ المخزون والأسعار</button>
+    </div>
+
+    <main class="max-w-4xl mx-auto px-4 mt-6">
+        
+        <!-- قسم إدارة التوصيل -->
+        <div id="seller-tab-delivery" class="space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-amber-500">
+                    <p class="text-xs text-slate-500 font-bold">قيد الانتظار</p>
+                    <p class="text-2xl font-extrabold text-amber-600 mt-1" id="statPending">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-sky-500">
+                    <p class="text-xs text-slate-500 font-bold">مجدول 📅</p>
+                    <p class="text-2xl font-extrabold text-sky-600 mt-1" id="statScheduled">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-emerald-500">
+                    <p class="text-xs text-slate-500 font-bold">تم الإستلام</p>
+                    <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statDelivered">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-rose-500">
+                    <p class="text-xs text-slate-500 font-bold">رفض الإستلام</p>
+                    <p class="text-2xl font-extrabold text-rose-600 mt-1" id="statRefused">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-indigo-600">
+                    <p class="text-xs text-slate-500 font-bold">المحصل اليومي</p>
+                    <p class="text-xl font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> د.م</p>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-xl shadow-sm border-r-4 border-teal-600">
+                    <p class="text-xs text-teal-800 font-bold">المجموع الصافي</p>
+                    <p class="text-xl font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> د.م</p>
+                    <p class="text-[11px] text-teal-600 font-semibold mt-0.5">التوصيل: -<span id="statDeliveryFees">0</span> د.م</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-900 text-white p-5 rounded-2xl shadow-md">
+                <div class="bg-white/10 p-3.5 rounded-xl border border-white/10">
+                    <span class="text-xs text-indigo-200 font-semibold">المجموع الصافي الإجمالي</span>
+                    <div id="box-net-total" class="text-2xl font-extrabold text-emerald-400 mt-1">0.00 د.م</div>
+                    <span class="text-[10px] text-indigo-300">مجموع الطلبات المسلمة ناقص مصاريف التوصيل</span>
+                </div>
+                <div class="bg-white/10 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs text-indigo-200 font-semibold">المال المتبقي عند اللفرور (المحصل اليومي - التوصيل)</span>
+                        <div id="box-courier-debt" class="text-2xl font-extrabold text-rose-300 mt-1">0.00 د.م</div>
+                    </div>
+                    <button onclick="settleCourierDebt()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-lg transition active-scale text-center">
+                        💰 استلمت المال (تصفير)
                     </button>
                 </div>
             </div>
-        </header>
 
-        <div class="bg-white border-b px-4 py-2 flex gap-2 sticky top-[73px] z-40 shadow-sm">
-            <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition">📦 إدارة التوصيل</button>
-            <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition">☂️ المخزون والأسعار</button>
-            <button onclick="switchSellerTab('stats')" id="stab-stats" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition">📊 تقارير المداخيل والماليات</button>
-        </div>
-
-        <main class="max-w-4xl mx-auto px-4 mt-6">
-            
-            <div id="seller-tab-delivery" class="space-y-6">
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-amber-500">
-                        <p class="text-xs text-slate-500 font-bold">قيد الانتظار</p>
-                        <p class="text-2xl font-extrabold text-amber-600 mt-1" id="statPending">0</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-sky-500">
-                        <p class="text-xs text-slate-500 font-bold">مجدول 📅</p>
-                        <p class="text-2xl font-extrabold text-sky-600 mt-1" id="statScheduled">0</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-emerald-500">
-                        <p class="text-xs text-slate-500 font-bold">تم الإستلام</p>
-                        <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statDelivered">0</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-rose-500">
-                        <p class="text-xs text-slate-500 font-bold">رفض الإستلام</p>
-                        <p class="text-2xl font-extrabold text-rose-600 mt-1" id="statRefused">0</p>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-indigo-600">
-                        <p class="text-xs text-slate-500 font-bold">المحصل اليومي</p>
-                        <p class="text-xl font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> د.م</p>
-                    </div>
-                    <div class="bg-emerald-50 p-4 rounded-xl shadow-sm border-r-4 border-teal-600">
-                        <p class="text-xs text-teal-800 font-bold">المجموع الصافي</p>
-                        <p class="text-xl font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> د.م</p>
-                        <p class="text-[11px] text-teal-600 font-semibold mt-0.5">التوصيل: -<span id="statDeliveryFees">0</span> د.م</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-900 text-white p-5 rounded-2xl shadow-md">
-                    <div class="bg-white/10 p-3.5 rounded-xl border border-white/10">
-                        <span class="text-xs text-indigo-200 font-semibold">المجموع الصافي الإجمالي</span>
-                        <div id="box-net-total" class="text-2xl font-extrabold text-emerald-400 mt-1">0.00 د.م</div>
-                        <span class="text-[10px] text-indigo-300">مجموع الطلبات المسلمة ناقص مصاريف التوصيل</span>
-                    </div>
-                    <div class="bg-white/10 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs text-indigo-200 font-semibold">المال المتبقي عند اللفرور (المحصل اليومي - التوصيل)</span>
-                            <div id="box-courier-debt" class="text-2xl font-extrabold text-rose-300 mt-1">0.00 د.م</div>
-                        </div>
-                        <button onclick="settleCourierDebt()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-lg transition active-scale text-center">
-                            💰 استلمت المال (تصفير)
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-1">
-                        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 sticky top-36">
-                            <h2 class="text-lg font-bold text-slate-800 mb-4">➕ إضافة طلب وتوصيل</h2>
-                            <form id="orderForm" class="space-y-3">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 sticky top-36">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4">➕ إضافة طلب وتوصيل</h2>
+                        <form id="orderForm" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">اختر المنتج *</label>
+                                <select id="orderProductSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهاتف *</label>
+                                <input type="tel" id="clientPhone" required placeholder="06XXXXXXXX" dir="ltr"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-right text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">العنوان *</label>
+                                <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
+                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs"></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">اختر المنتج *</label>
-                                    <select id="orderProductSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                                    </select>
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">الثمن (د.م)</label>
+                                    <input type="number" id="orderPrice" required placeholder="130"
+                                        class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهاتف *</label>
-                                    <input type="tel" id="clientPhone" required placeholder="06XXXXXXXX" dir="ltr"
-                                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-right text-xs">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">العنوان *</label>
-                                    <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
-                                        class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs"></textarea>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">الثمن (د.م)</label>
-                                        <input type="number" id="orderPrice" required placeholder="130"
-                                            class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
-                                    </div>
-                                    <div>
-                                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">التوصيل (د.م)</label>
-                                        <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
-                                            class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
-                                    </div>
-                                </div>
-                                <button type="submit" id="submitBtn"
-                                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95 text-xs">
-                                    🚀 إرسال للفرور فوراً
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-2">
-                        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
-                            <div class="mb-4">
-                                <h2 class="text-lg font-bold text-slate-800 mb-3">📋 متابعة الطلبات</h2>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
-                                    <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-amber-500 text-white">
-                                        <i class="fa-solid fa-clock-rotate-left"></i> قيد الانتظار
-                                    </button>
-                                    <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
-                                        <i class="fa-solid fa-calendar-days"></i> مجدولة
-                                    </button>
-                                    <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
-                                        <i class="fa-solid fa-circle-check"></i> تم الإستلام
-                                    </button>
-                                    <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
-                                        <i class="fa-solid fa-circle-xmark"></i> رفض الإستلام
-                                    </button>
+                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">التوصيل (د.م)</label>
+                                    <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
+                                        class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
                                 </div>
                             </div>
-                            <div id="sellerOrdersList" class="space-y-4"></div>
+                            <button type="submit" id="submitBtn"
+                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95 text-xs">
+                                🚀 إرسال للفرور فوراً
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                        <div class="mb-4">
+                            <h2 class="text-lg font-bold text-slate-800 mb-3">📋 متابعة الطلبات</h2>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
+                                <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-amber-500 text-white">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> قيد الانتظار
+                                </button>
+                                <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                    <i class="fa-solid fa-calendar-days"></i> مجدولة
+                                </button>
+                                <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                    <i class="fa-solid fa-circle-check"></i> تم الإستلام
+                                </button>
+                                <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                    <i class="fa-solid fa-circle-xmark"></i> رفض الإستلام
+                                </button>
+                            </div>
                         </div>
+                        <div id="sellerOrdersList" class="space-y-4"></div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="seller-tab-inventory" class="space-y-4 hidden">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-base font-bold text-slate-800">إدارة المخزون والأسعار</h2>
-                    <button onclick="openRestockModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> إضافة شحنة واردة
-                    </button>
-                </div>
-                <div id="inventory-list" class="space-y-2.5"></div>
+        <!-- قسم المخزون والأسعار -->
+        <div id="seller-tab-inventory" class="space-y-4 hidden">
+            <div class="flex items-center justify-between">
+                <h2 class="text-base font-bold text-slate-800">إدارة المخزون والأسعار</h2>
+                <button onclick="openRestockModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> إضافة شحنة واردة
+                </button>
             </div>
+            <div id="inventory-list" class="space-y-2.5"></div>
+        </div>
 
-            <div id="seller-tab-stats" class="space-y-4 hidden">
-                <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
-                    <h3 class="text-sm font-bold text-slate-800">ملخص الأرباح والمخزون المتبقي</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <span class="text-xs text-indigo-600 font-semibold">إجمالي المداخيل</span>
-                            <div id="report-revenue" class="text-xl font-extrabold text-indigo-900 mt-1">0.00 DH</div>
-                        </div>
-                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                            <span class="text-xs text-emerald-600 font-semibold">صافي الأرباح</span>
-                            <div id="report-profit" class="text-xl font-extrabold text-emerald-900 mt-1">0.00 DH</div>
-                        </div>
-                    </div>
-                    <div class="relative h-64 pt-2">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- ================= واجهة صفحة اللفرور المعزولة ================= -->
-    <div id="courierView" class="hidden">
-        <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50 shadow-md">
-            <div class="max-w-lg mx-auto px-4 py-4 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <!-- زر الدراجة النارية لتغيير اسم اللفرور عند الضغط عليه -->
-                    <button onclick="changeCourierNamePrompt()" class="bg-emerald-500/20 text-emerald-400 p-2.5 rounded-xl text-xl hover:bg-emerald-500/30 active-scale transition" title="اضغط لتغيير اسم اللفرور">
-                        🛵
-                    </button>
-                    <div>
-                        <h1 class="text-lg font-extrabold text-white" id="courierTitleName">صفحة اللفرور</h1>
-                </div>
-                <span class="bg-amber-500 text-slate-950 font-extrabold text-sm px-3 py-1 rounded-full" id="pendingBadge">0 قيد الانتظار</span>
-            </div>
-        </header>
-
-        <main class="max-w-lg mx-auto px-4 mt-6">
-            <div id="courierOrdersList" class="space-y-4"></div>
-        </main>
-    </div>
+    </main>
 
     <!-- Modal: Edit Price -->
     <div id="price-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -280,74 +231,27 @@
             { id: 'green', name: 'مظلة باللون الزيتي', stock: 53, cost: 0, price: 130, hex: '#16a34a' }
         ];
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const isCourier = urlParams.get('mode') === 'courier';
-        let roomCode = urlParams.get('store') || localStorage.getItem('DELIVERY_ROOM_CODE') || 'simo_tanger_live_99';
-        localStorage.setItem('DELIVERY_ROOM_CODE', roomCode);
-
-        const ORDERS_KEY = `ORDERS_DATA_${roomCode}`;
-        const COLORS_KEY = `COLORS_DATA_${roomCode}_v17`;
-        const TX_KEY = `TX_DATA_${roomCode}`;
-        const COURIER_DEBT_KEY = `COURIER_DEBT_${roomCode}`;
-        const COURIER_NAME_KEY = `COURIER_NAME_${roomCode}`;
-        const NTFY_TOPIC = `simo_delivery_sync_${roomCode}`;
+        const STORE_ROOM = 'simo_tanger_live_99';
+        const ORDERS_KEY = `ORDERS_DATA_${STORE_ROOM}`;
+        const COLORS_KEY = `COLORS_DATA_${STORE_ROOM}_v18`;
+        const COURIER_DEBT_KEY = `COURIER_DEBT_${STORE_ROOM}`;
+        const NTFY_TOPIC = `simo_delivery_sync_${STORE_ROOM}`;
 
         let orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
         let colors = JSON.parse(localStorage.getItem(COLORS_KEY) || JSON.stringify(UPDATED_COLORS));
-        let transactions = JSON.parse(localStorage.getItem(TX_KEY) || '[]');
         let courierDebt = parseFloat(localStorage.getItem(COURIER_DEBT_KEY) || '0');
         
         let currentFilter = 'pending';
-        let activeActionId = null;
         let editingColorId = null;
-        let salesChartInstance = null;
 
-        if (isCourier) {
-            document.getElementById('appBody').className = 'min-h-screen pb-12 bg-slate-900 text-white';
-            document.getElementById('courierView').classList.remove('hidden');
-            document.title = 'صفحة اللفرور - الطلبات قيد الانتظار';
-
-            let courierName = localStorage.getItem(COURIER_NAME_KEY);
-            if (!courierName || courierName.trim() === '') {
-                courierName = prompt('المرجو إدخال اسمك (اللفرور):', 'اللفرور');
-                if (courierName && courierName.trim()) {
-                    localStorage.setItem(COURIER_NAME_KEY, courierName.trim());
-                } else {
-                    localStorage.setItem(COURIER_NAME_KEY, 'اللفرور');
-                }
-            }
-            updateCourierHeaderName();
-        } else {
-            document.getElementById('appBody').className = 'min-h-screen pb-12 bg-slate-100 text-slate-900';
-            document.getElementById('sellerView').classList.remove('hidden');
-            document.getElementById('displayRoomCode').textContent = roomCode;
-            populateProductDropdown();
-        }
-
-        // دالة تحديث عرض اسم اللفرور في الترويسة
-        function updateCourierHeaderName() {
-            const name = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const titleEl = document.getElementById('courierTitleName');
-            if (titleEl) {
-                titleEl.textContent = `اللفرور: ${name}`;
-            }
-        }
-
-        // دالة تغيير اسم اللفرور عند النقر على أيقونة الدراجة النارية
-        function changeCourierNamePrompt() {
-            const currentName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const newName = prompt('تعديل اسم اللفرور:', currentName);
-            if (newName && newName.trim() !== '') {
-                localStorage.setItem(COURIER_NAME_KEY, newName.trim());
-                updateCourierHeaderName();
-                alert(`تم تحديث اسم اللفرور إلى: ${newName.trim()}`);
-            }
-        }
+        populateProductDropdown();
+        renderSellerOrders();
+        renderInventoryList();
+        updateSellerStats();
 
         function saveAll() {
             localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
             localStorage.setItem(COLORS_KEY, JSON.stringify(colors));
-            localStorage.setItem(TX_KEY, JSON.stringify(transactions));
             localStorage.setItem(COURIER_DEBT_KEY, courierDebt.toString());
             syncCloud();
         }
@@ -356,12 +260,12 @@
             try {
                 await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
                     method: 'POST',
-                    body: JSON.stringify({ orders, colors, transactions, courierDebt })
+                    body: JSON.stringify({ orders, colors, courierDebt })
                 });
             } catch (e) {}
         }
 
-        async function fetchCloudHistory() {
+        async function fetchCloudData() {
             try {
                 const res = await fetch(`https://ntfy.sh/${NTFY_TOPIC}/json?poll=1&since=24h`);
                 const text = await res.text();
@@ -373,20 +277,21 @@
                             const parsed = JSON.parse(msg.message);
                             if (parsed && parsed.orders) {
                                 orders = parsed.orders;
-                                transactions = parsed.transactions || transactions;
+                                colors = parsed.colors || colors;
                                 courierDebt = parsed.courierDebt !== undefined ? parsed.courierDebt : courierDebt;
                                 
                                 localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-                                localStorage.setItem(TX_KEY, JSON.stringify(transactions));
+                                localStorage.setItem(COLORS_KEY, JSON.stringify(colors));
                                 localStorage.setItem(COURIER_DEBT_KEY, courierDebt.toString());
-                                renderUI();
+                                renderSellerOrders();
+                                renderInventoryList();
+                                updateSellerStats();
                                 break;
                             }
                         }
                     }
                 }
             } catch (e) {}
-            renderUI();
         }
 
         function startLiveStream() {
@@ -398,27 +303,19 @@
                         const parsed = JSON.parse(data.message);
                         if (parsed && parsed.orders) {
                             orders = parsed.orders;
-                            transactions = parsed.transactions || transactions;
+                            colors = parsed.colors || colors;
                             courierDebt = parsed.courierDebt !== undefined ? parsed.courierDebt : courierDebt;
 
                             localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-                            localStorage.setItem(TX_KEY, JSON.stringify(transactions));
+                            localStorage.setItem(COLORS_KEY, JSON.stringify(colors));
                             localStorage.setItem(COURIER_DEBT_KEY, courierDebt.toString());
-                            if (!activeActionId) renderUI();
+                            renderSellerOrders();
+                            renderInventoryList();
+                            updateSellerStats();
                         }
                     }
                 } catch (e) {}
             };
-        }
-
-        function renderUI() {
-            if (isCourier) {
-                renderCourierOrders();
-            } else {
-                renderSellerOrders();
-                renderInventoryList();
-                updateStatsAndChart();
-            }
         }
 
         function populateProductDropdown() {
@@ -445,7 +342,7 @@
 
         const orderForm = document.getElementById('orderForm');
         if (orderForm) {
-            orderForm.addEventListener('submit', async (e) => {
+            orderForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const productId = document.getElementById('orderProductSelect').value;
                 const product = colors.find(c => c.id === productId);
@@ -469,83 +366,30 @@
                 orderForm.reset();
                 document.getElementById('orderDeliveryFee').value = '20';
                 saveAll();
-                renderUI();
+                renderSellerOrders();
+                updateSellerStats();
             });
-        }
-
-        async function markDelivered(id) {
-            const idx = orders.findIndex(o => o.id === id);
-            if (idx === -1) return;
-
-            const order = orders[idx];
-            order.status = 'delivered';
-            order.deliveredAt = Date.now();
-
-            const prod = colors.find(c => c.id === order.productId);
-            if (prod) {
-                prod.stock = Math.max(0, prod.stock - 1);
-
-                const netProfit = order.price - prod.cost - order.deliveryFee;
-
-                transactions.push({
-                    id: 'TRX-' + Date.now(),
-                    colorName: prod.name,
-                    quantity: 1,
-                    revenue: order.price,
-                    cost: prod.cost,
-                    delivery: order.deliveryFee,
-                    profit: netProfit,
-                    timestamp: order.deliveredAt,
-                    date: new Date(order.deliveredAt).toLocaleDateString('ar-MA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-                });
-            }
-
-            activeActionId = null;
-            saveAll();
-            renderUI();
-
-            const sellerWhatsAppNumber = '212660005716';
-            const waMsg = `✅ تم استلام الطلب بنجاح \n📍 العنوان: ${order.address} \n💰 الثمن: ${order.price} د.م`;
-            const waUrl = `https://wa.me/${sellerWhatsAppNumber}?text=${encodeURIComponent(waMsg)}`;
-            window.open(waUrl, '_blank');
-        }
-
-        function getClientWhatsAppUrl(phone, productName, price, address) {
-            let clean = phone.replace(/[^0-9+]/g, '');
-            if (clean.startsWith('06') || clean.startsWith('07')) {
-                clean = '212' + clean.substring(1);
-            } else if (clean.startsWith('+')) {
-                clean = clean.substring(1);
-            }
-            const courierName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const msg = `👋 السلام عليكم 👋\n 
- 🛵 معكم : *${courierName}* اللفرور \n
-📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}* \n
-💵 المبلغ المستحق : *${price}* درهم \n
-📌 المرجو تأكيد عنوانكم : *${address}*`;
-            return `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
         }
 
         function settleCourierDebt() {
             if (confirm(`هل أنت متأكد من تصفير الحساب واستلام الأموال من اللفرور؟`)) {
-                localStorage.setItem(`SETTLED_TIME_${roomCode}`, Date.now().toString());
-                renderUI();
+                localStorage.setItem(`SETTLED_TIME_${STORE_ROOM}`, Date.now().toString());
+                renderSellerOrders();
+                updateSellerStats();
             }
         }
 
         function switchSellerTab(tab) {
-            ['delivery', 'inventory', 'stats'].forEach(t => {
+            ['delivery', 'inventory'].forEach(t => {
                 document.getElementById(`seller-tab-${t}`).classList.add('hidden');
                 document.getElementById(`stab-${t}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition';
             });
             document.getElementById(`seller-tab-${tab}`).classList.remove('hidden');
             document.getElementById(`stab-${tab}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition';
-            if(tab === 'stats') updateStatsAndChart();
         }
 
         function setFilter(f) {
             currentFilter = f;
-            
             const buttons = {
                 'pending': { id: 'f-pending', activeClass: 'bg-amber-500 text-white' },
                 'scheduled': { id: 'f-scheduled', activeClass: 'bg-sky-600 text-white' },
@@ -567,47 +411,42 @@
             renderSellerOrders();
         }
 
-        async function deleteOrder(id) {
+        function deleteOrder(id) {
             if (!confirm('حذف هذا الطلب نهائياً؟')) return;
             orders = orders.filter(o => o.id !== id);
             saveAll();
+            renderSellerOrders();
+            updateSellerStats();
         }
 
-        async function returnToCourier(id) {
+        function returnToCourier(id) {
             const idx = orders.findIndex(o => o.id === id);
             if (idx !== -1) {
                 orders[idx].status = 'pending';
                 saveAll();
+                renderSellerOrders();
+                updateSellerStats();
             }
         }
 
         function getCourierUrl() {
-            const baseUrl = window.location.href.split('?')[0];
-            return `${baseUrl}?mode=courier&store=${encodeURIComponent(roomCode)}`;
+            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            return `${baseUrl}livreur.html?store=${encodeURIComponent(STORE_ROOM)}`;
         }
 
-        function openCourierPreview() { window.open(getCourierUrl(), '_blank'); }
+        function openCourierPage() { window.open(getCourierUrl(), '_blank'); }
         function copyCourierLink() {
-            navigator.clipboard.writeText(getCourierUrl()).then(() => alert('تم نسخ رابط اللفرور بنجاح!'));
+            navigator.clipboard.writeText(getCourierUrl()).then(() => alert('تم نسخ رابط صفحة اللفرور بنجاح!'));
         }
 
-        function changeStoreCode() {
-            const newCode = prompt('أدخل كود خاص بمتجرك:', roomCode);
-            if (newCode && newCode.trim()) {
-                roomCode = newCode.trim().replace(/[^a-zA-Z0-9_]/g, '');
-                localStorage.setItem('DELIVERY_ROOM_CODE', roomCode);
-                window.location.search = `?store=${encodeURIComponent(roomCode)}`;
-            }
-        }
-
-        function renderSellerOrders() {
+        function updateSellerStats() {
             const pendingCount = orders.filter(o => o.status === 'pending').length;
             const scheduledCount = orders.filter(o => o.status === 'scheduled').length;
             const deliveredOrders = orders.filter(o => o.status === 'delivered');
             const refusedCount = orders.filter(o => o.status === 'refused').length;
 
             const todayStr = new Date().toDateString();
-            const settledTime = parseInt(localStorage.getItem(`SETTLED_TIME_${roomCode}`) || '0');
+            const settledTime = parseInt(localStorage.getItem(`SETTLED_TIME_${STORE_ROOM}`) || '0');
 
             const deliveredToday = deliveredOrders.filter(o => {
                 const oDate = o.deliveredAt ? new Date(o.deliveredAt).toDateString() : '';
@@ -635,7 +474,10 @@
 
             document.getElementById('box-net-total').textContent = `${totalNetProfit.toFixed(2)} د.م`;
             document.getElementById('box-courier-debt').textContent = `${courierRemainingMoney.toFixed(2)} د.م`;
+        }
 
+        function renderSellerOrders() {
+            updateSellerStats();
             const container = document.getElementById('sellerOrdersList');
             const filtered = orders.filter(o => o.status === currentFilter);
 
@@ -705,36 +547,6 @@
             `).join('');
         }
 
-        function updateStatsAndChart() {
-            let totalRev = 0, totalProf = 0;
-            transactions.forEach(t => {
-                totalRev += t.revenue;
-                totalProf += t.profit;
-            });
-            document.getElementById('report-revenue').textContent = `${totalRev.toFixed(2)} DH`;
-            document.getElementById('report-profit').textContent = `${totalProf.toFixed(2)} DH`;
-
-            const canvas = document.getElementById('salesChart');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const labels = colors.map(c => c.name);
-            const dataVals = colors.map(c => transactions.filter(t => t.colorName === c.name).reduce((sum, t) => sum + t.revenue, 0));
-
-            if (salesChartInstance) {
-                salesChartInstance.data.datasets[0].data = dataVals;
-                salesChartInstance.update();
-                return;
-            }
-            salesChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{ label: 'مداخيل المبيعات (DH)', data: dataVals, backgroundColor: colors.map(c => c.hex) }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
         function openPriceModal(id) {
             editingColorId = id;
             const item = colors.find(c => c.id === id);
@@ -749,114 +561,18 @@
             item.price = parseFloat(document.getElementById('edit-price-input').value) || 0;
             closePriceModal();
             saveAll();
-            renderUI();
-        }
-
-        function openRestockModal() {
-            const select = document.getElementById('restock-color-select');
-            select.innerHTML = colors.map(c => `<option value="${c.id}">${c.name} (المتوفر: ${c.stock})</option>`).join('');
-            document.getElementById('stock-modal').classList.remove('hidden');
-        }
-        function closeRestockModal() { document.getElementById('stock-modal').classList.add('hidden'); }
-        function handleRestockSubmit() {
-            const id = document.getElementById('restock-color-select').value;
-            const qty = parseInt(document.getElementById('restock-qty-input').value) || 0;
-            const item = colors.find(c => c.id === id);
-            if(item) item.stock += qty;
-            closeRestockModal();
-            saveAll();
-            renderUI();
-        }
-
-        function showRefusalBox(id) {
-            activeActionId = id;
-            document.getElementById('refusal-box-' + id).classList.remove('hidden');
-        }
-        function showScheduleBox(id) {
-            activeActionId = id;
-            document.getElementById('schedule-box-' + id).classList.remove('hidden');
-        }
-        function cancelActionBox(id) {
-            activeActionId = null;
-            document.getElementById('refusal-box-' + id).classList.add('hidden');
-            document.getElementById('schedule-box-' + id).classList.add('hidden');
-        }
-        async function confirmRefusal(id) {
-            const reason = document.getElementById('reason-input-' + id).value.trim();
-            if(!reason) return alert('أدخل السبب');
-            const idx = orders.findIndex(o => o.id === id);
-            orders[idx].status = 'refused';
-            orders[idx].refusalReason = reason;
-            activeActionId = null;
-            saveAll();
-        }
-        async function confirmSchedule(id) {
-            const d = document.getElementById('sched-date-' + id).value;
-            const t = document.getElementById('sched-time-' + id).value;
-            const idx = orders.findIndex(o => o.id === id);
-            orders[idx].status = 'scheduled';
-            orders[idx].scheduledDate = d;
-            orders[idx].scheduledTime = t;
-            activeActionId = null;
-            saveAll();
-        }
-
-        function renderCourierOrders() {
-            const pendingOrders = orders.filter(o => o.status === 'pending');
-            document.getElementById('pendingBadge').textContent = `${pendingOrders.length} قيد الانتظار`;
-            const container = document.getElementById('courierOrdersList');
-
-            if (pendingOrders.length === 0) {
-                container.innerHTML = `<div class="bg-slate-800 p-10 text-center rounded-2xl text-slate-400">لا توجد طلبات قيد الانتظار</div>`;
-                return;
-            }
-
-            container.innerHTML = pendingOrders.map(order => `
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 shadow-lg text-white">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-xs text-amber-400 font-bold">📦 ${order.productName || 'مظلة'}</span>
-                        <span class="font-extrabold text-indigo-300">${order.price} د.م</span>
-                    </div>
-                    <p class="text-sm mb-4">📍 ${order.address}</p>
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <a href="tel:${order.phone}" class="bg-blue-600 text-center py-2.5 rounded-xl font-bold text-xs">📞 ${order.phone}</a>
-                        <a href="${getClientWhatsAppUrl(order.phone, order.productName, order.price, order.address)}" target="_blank" class="bg-emerald-600 text-center py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> واتساب المستلم
-                        </a>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="markDelivered('${order.id}')" class="bg-emerald-600 py-2.5 rounded-xl font-bold text-xs">✅ تم الإستلام</button>
-                        <button onclick="showRefusalBox('${order.id}')" class="bg-rose-600 py-2.5 rounded-xl font-bold text-xs">❌ رفض</button>
-                        <button onclick="showScheduleBox('${order.id}')" class="bg-sky-600 py-2.5 rounded-xl font-bold text-xs">📅 جدولة</button>
-                    </div>
-                    <div id="refusal-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-700">
-                        <input type="text" id="reason-input-${order.id}" placeholder="سبب الرفض..." class="w-full px-3 py-2 bg-slate-900 border rounded-xl text-xs mb-2">
-                        <div class="flex gap-2">
-                            <button onclick="confirmRefusal('${order.id}')" class="flex-1 bg-rose-600 py-1.5 rounded-xl text-xs font-bold">تأكيد الرفض</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-3 bg-slate-700 rounded-xl text-xs">إلغاء</button>
-                        </div>
-                    </div>
-                    <div id="schedule-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-700 text-xs">
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <input type="date" id="sched-date-${order.id}" class="bg-slate-900 p-2 rounded-xl border">
-                            <input type="time" id="sched-time-${order.id}" class="bg-slate-900 p-2 rounded-xl border">
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="confirmSchedule('${order.id}')" class="flex-1 bg-sky-600 py-1.5 rounded-xl font-bold">تأكيد الجدولة</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-3 bg-slate-700 rounded-xl">إلغاء</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            renderInventoryList();
+            populateProductDropdown();
         }
 
         window.addEventListener('storage', () => {
             orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
             colors = JSON.parse(localStorage.getItem(COLORS_KEY) || JSON.stringify(UPDATED_COLORS));
-            if (!activeActionId) renderUI();
+            renderSellerOrders();
+            renderInventoryList();
         });
 
-        fetchCloudHistory();
+        fetchCloudData();
         startLiveStream();
     </script>
 </body>
