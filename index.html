@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simo Chop - Seller Dashboard</title>
     <script>
-        // نظام الحماية: التحقق من تسجيل الدخول
         if (localStorage.getItem('SIMO_LOGGED_IN') !== 'true') {
             window.location.href = 'login.html';
         }
@@ -26,14 +25,12 @@
     <header class="glass-header sticky top-0 z-50 shadow-lg">
         <div class="max-w-6xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
             
-            <!-- أزرار اللغات مصغرة وفي اليمين -->
             <div class="flex items-center gap-1 bg-slate-800/80 border border-slate-700/80 rounded-xl p-0.5 shadow-inner">
                 <button onclick="changeLanguage('ar')" id="lang-ar" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">العربية</button>
                 <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
-                <button onclick="changeLanguage('en')" id="lang-en" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
+                <button onclick="changeLanguage('en')" id="lang-en" class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
             </div>
 
-            <!-- عنوان لوحة التحكم وشعار المتجر في الشمال (اليسار) -->
             <div class="flex items-center gap-3">
                 <button onclick="logoutAdmin()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-rose-900/50 transition-smooth" title="تسجيل الخروج">
                     <i class="fa-solid fa-power-off"></i>
@@ -50,7 +47,6 @@
             </div>
         </div>
 
-        <!-- شريط الأزرار التحتية (نسخ الرابط وصفحة اللفرور) -->
         <div class="max-w-6xl mx-auto px-4 pb-3.5 flex justify-between items-center gap-3 border-t border-slate-800/60 pt-3">
             <button onclick="copyCourierLink()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl border border-slate-700 shadow-xs transition-smooth flex items-center gap-2">
                 <i class="fa-solid fa-link"></i> <span data-i18n="copyLink">نسخ الرابط</span>
@@ -132,6 +128,21 @@
                                 <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="selectProduct">اختر المنتج *</label>
                                 <select id="orderProductSelect" class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></select>
                             </div>
+                            
+                            <!-- خانة العدد (الكمية) الجديدة -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="quantityLabel">العدد (الكمية) *</label>
+                                    <input type="number" id="orderQty" required min="1" value="1"
+                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="price">الثمن الإجمالي</label>
+                                    <input type="number" id="orderPrice" required placeholder="130"
+                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="phoneNumber">رقم الهاتف *</label>
                                 <input type="tel" id="clientPhone" required placeholder="06XXXXXXXX" dir="ltr"
@@ -142,18 +153,13 @@
                                 <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
                                     class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" data-i18n-placeholder="addressPlaceholder"></textarea>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="price">الثمن</label>
-                                    <input type="number" id="orderPrice" required placeholder="130"
-                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="deliveryFee">التوصيل</label>
-                                    <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
-                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
-                                </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="deliveryFee">مصاريف التوصيل</label>
+                                <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
+                                    class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
                             </div>
+
                             <button type="submit" id="submitBtn"
                                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-smooth active:scale-95 text-xs flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-paper-plane"></i> <span data-i18n="sendToCourier">إرسال للفرور فوراً</span>
@@ -217,6 +223,10 @@
             <div class="space-y-3.5 text-xs">
                 <input type="hidden" id="edit-order-id">
                 <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="quantityLabel">العدد (الكمية)</label>
+                    <input id="edit-order-qty" type="number" min="1" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
+                </div>
+                <div>
                     <label class="block font-bold text-slate-300 mb-1" data-i18n="phoneNumber">رقم الهاتف *</label>
                     <input id="edit-order-phone" type="tel" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white text-right" dir="ltr">
                 </div>
@@ -225,7 +235,7 @@
                     <textarea id="edit-order-address" rows="2" class="w-full px-3.5 py-2.5 border border-slate-700 rounded-xl font-semibold bg-slate-800 text-white"></textarea>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1" data-i18n="price">الثمن</label>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="price">الثمن الإجمالي</label>
                     <input id="edit-order-price" type="number" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
             </div>
@@ -236,7 +246,7 @@
         </div>
     </div>
 
-    <!-- نوافذ أخرى -->
+    <!-- نافذة تعديل المنتج -->
     <div id="price-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -249,7 +259,7 @@
                     <input id="edit-name-input" type="text" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر البيع</label>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر الوحدة</label>
                     <input id="edit-price-input" type="number" step="0.5" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
@@ -264,6 +274,7 @@
         </div>
     </div>
 
+    <!-- نافذة منتج جديد -->
     <div id="new-product-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -276,7 +287,7 @@
                     <input id="new-prod-name" type="text" placeholder="مثال: مظلة جديدة" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر البيع الافتراضي *:</label>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر الوحدة الافتراضي *:</label>
                     <input id="new-prod-price" type="number" value="130" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
@@ -295,6 +306,7 @@
         </div>
     </div>
 
+    <!-- نافذة إضافة شحنة -->
     <div id="stock-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -344,11 +356,12 @@
                 settleBtn: "استلمت المال (تصفير الحساب)",
                 addNewOrder: "إضافة طلب جديد",
                 selectProduct: "اختر المنتج *",
+                quantityLabel: "العدد (الكمية) *",
                 phoneNumber: "رقم الهاتف *",
                 address: "العنوان *",
                 addressPlaceholder: "الحي، الشارع، رقم المنزل...",
-                price: "الثمن",
-                deliveryFee: "التوصيل",
+                price: "الثمن الإجمالي",
+                deliveryFee: "مصاريف التوصيل",
                 sendToCourier: "إرسال للفرور فوراً",
                 trackOrders: "متابعة الطلبات",
                 inventoryTitle: "إدارة المخزون والمنتجات",
@@ -357,7 +370,7 @@
                 editProductTitle: "تعديل تفاصيل المنتج",
                 editOrderTitle: "تعديل تفاصيل الطلب",
                 productName: "اسم المنتج:",
-                sellingPrice: "سعر البيع",
+                sellingPrice: "سعر الوحدة",
                 imageUrl: "رابط صورة المنتج (URL):",
                 saveBtn: "حفظ التعديلات",
                 cancelBtn: "إلغاء",
@@ -395,11 +408,12 @@
                 settleBtn: "Argent reçu (Réinitialiser)",
                 addNewOrder: "Ajouter une commande",
                 selectProduct: "Sélectionner le produit *",
+                quantityLabel: "Quantité *",
                 phoneNumber: "Téléphone *",
                 address: "Adresse *",
                 addressPlaceholder: "Quartier, rue, numéro de maison...",
-                price: "Prix",
-                deliveryFee: "Livraison",
+                price: "Prix Total",
+                deliveryFee: "Frais de livraison",
                 sendToCourier: "Envoyer au livreur",
                 trackOrders: "Suivi des commandes",
                 inventoryTitle: "Gestion du Stock & Produits",
@@ -408,7 +422,7 @@
                 editProductTitle: "Modifier le produit",
                 editOrderTitle: "Modifier la commande",
                 productName: "Nom du produit:",
-                sellingPrice: "Prix de vente",
+                sellingPrice: "Prix unitaire",
                 imageUrl: "Lien de l'image (URL):",
                 saveBtn: "Enregistrer",
                 cancelBtn: "Annuler",
@@ -446,11 +460,12 @@
                 settleBtn: "Money Received (Reset)",
                 addNewOrder: "Add New Order",
                 selectProduct: "Select Product *",
+                quantityLabel: "Quantity *",
                 phoneNumber: "Phone Number *",
                 address: "Address *",
                 addressPlaceholder: "Neighborhood, street, house number...",
-                price: "Price",
-                deliveryFee: "Delivery",
+                price: "Total Price",
+                deliveryFee: "Delivery Fee",
                 sendToCourier: "Send to Courier",
                 trackOrders: "Track Orders",
                 inventoryTitle: "Inventory & Products Management",
@@ -459,7 +474,7 @@
                 editProductTitle: "Edit Product Details",
                 editOrderTitle: "Edit Order Details",
                 productName: "Product Name:",
-                sellingPrice: "Selling Price",
+                sellingPrice: "Unit Price",
                 imageUrl: "Product Image URL:",
                 saveBtn: "Save Changes",
                 cancelBtn: "Cancel",
@@ -496,7 +511,7 @@
                     if (l === lang) {
                         btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
                     } else {
-                        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
+                        btn.className = "px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
                     }
                 }
             });
@@ -592,19 +607,32 @@
             colors.forEach(c => {
                 const opt = document.createElement('option');
                 opt.value = c.id;
+                opt.dataset.price = c.price;
                 opt.textContent = `${c.name} (متوفر: ${c.stock}) - ${c.price} ${translations[currentLang].currency}`;
                 select.appendChild(opt);
             });
 
-            select.onchange = (e) => {
-                const selected = colors.find(c => c.id === e.target.value);
-                if (selected) {
-                    document.getElementById('orderPrice').value = selected.price;
-                }
-            };
-            if(colors.length > 0 && !document.getElementById('orderPrice').value) {
-                document.getElementById('orderPrice').value = colors[0].price;
+            select.onchange = updateCalculatedPrice;
+            updateCalculatedPrice();
+        }
+
+        function updateCalculatedPrice() {
+            const select = document.getElementById('orderProductSelect');
+            const qtyInput = document.getElementById('orderQty');
+            const priceInput = document.getElementById('orderPrice');
+            if (!select || !qtyInput || !priceInput) return;
+
+            const selectedOpt = select.options[select.selectedIndex];
+            if (selectedOpt) {
+                const unitPrice = parseFloat(selectedOpt.dataset.price) || 0;
+                const qty = parseInt(qtyInput.value) || 1;
+                priceInput.value = unitPrice * qty;
             }
+        }
+
+        const orderQtyInput = document.getElementById('orderQty');
+        if (orderQtyInput) {
+            orderQtyInput.oninput = updateCalculatedPrice;
         }
 
         const orderForm = document.getElementById('orderForm');
@@ -613,11 +641,13 @@
                 e.preventDefault();
                 const productId = document.getElementById('orderProductSelect').value;
                 const product = colors.find(c => c.id === productId);
+                const qty = parseInt(document.getElementById('orderQty').value) || 1;
 
                 const newOrder = {
                     id: 'ORD_' + Date.now(),
                     productId: productId,
                     productName: product ? product.name : 'منتج',
+                    quantity: qty,
                     phone: document.getElementById('clientPhone').value.trim(),
                     address: document.getElementById('clientAddress').value.trim(),
                     price: parseFloat(document.getElementById('orderPrice').value) || 0,
@@ -631,7 +661,9 @@
 
                 orders.unshift(newOrder);
                 orderForm.reset();
+                document.getElementById('orderQty').value = '1';
                 document.getElementById('orderDeliveryFee').value = '20';
+                populateProductDropdown();
                 saveAllToSupabase();
                 renderSellerOrders();
                 updateSellerStats();
@@ -690,6 +722,7 @@
             const order = orders.find(o => o.id === id);
             if (!order) return;
             document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-qty').value = order.quantity || 1;
             document.getElementById('edit-order-phone').value = order.phone;
             document.getElementById('edit-order-address').value = order.address;
             document.getElementById('edit-order-price').value = order.price;
@@ -702,6 +735,7 @@
             const id = document.getElementById('edit-order-id').value;
             const order = orders.find(o => o.id === id);
             if (!order) return;
+            order.quantity = parseInt(document.getElementById('edit-order-qty').value) || 1;
             order.phone = document.getElementById('edit-order-phone').value.trim();
             order.address = document.getElementById('edit-order-address').value.trim();
             order.price = parseFloat(document.getElementById('edit-order-price').value) || order.price;
@@ -790,11 +824,16 @@
                     `;
                 }
 
+                const qtyBadge = order.quantity ? `<span class="bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-lg text-[10px] ml-1">العدد: ${order.quantity}</span>` : '';
+
                 return `
                 <div class="border border-slate-800 rounded-2xl p-4 bg-slate-900/80 shadow-md transition-smooth hover:border-slate-700">
                     <div class="flex justify-between items-start gap-2 mb-2">
                         <div>
-                            <span class="text-[11px] bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[11px] bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
+                                ${qtyBadge}
+                            </div>
                             <p class="font-bold text-slate-200 text-xs mt-2 flex items-center gap-1.5">
                                 <span class="text-rose-400">📍</span> ${order.address}
                             </p>
