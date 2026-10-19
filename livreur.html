@@ -31,13 +31,14 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5">
+            <!-- أزرار اللغات وعدد قيد الانتظار في الأعلى فوق بعضهما بشكل أنيق -->
+            <div class="flex flex-col items-end gap-1.5">
                 <div class="bg-slate-800 border border-slate-700/80 rounded-xl p-1 flex items-center gap-1 shadow-inner">
-                    <button onclick="changeCourierLanguage('ar')" id="c-lang-ar" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-smooth">AR</button>
-                    <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-smooth">FR</button>
-                    <button onclick="changeCourierLanguage('en')" id="c-lang-en" class="px-2.5 py-1 text-xs font-bold rounded-lg transition-smooth">EN</button>
+                    <button onclick="changeCourierLanguage('ar')" id="c-lang-ar" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">AR</button>
+                    <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
+                    <button onclick="changeCourierLanguage('en')" id="c-lang-en" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
                 </div>
-                <span class="bg-amber-400 text-slate-950 font-black text-xs px-3.5 py-2 rounded-2xl shadow-sm whitespace-nowrap" id="pendingBadge">0 <span data-i18n="pendingBadgeText">قيد الانتظار</span></span>
+                <span class="bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-xl shadow-sm whitespace-nowrap" id="pendingBadge">0 <span data-i18n="pendingBadgeText">قيد الانتظار</span></span>
             </div>
         </div>
     </header>
@@ -57,12 +58,18 @@
                 deliveredBtn: "✅ تم الإستلام",
                 refusedBtn: "❌ رفض",
                 scheduleBtn: "📅 جدولة",
-                refusalPlaceholder: "سبب الرفض...",
+                refusalPlaceholder: "سبب الرفض أو اختر من الأسباب أعلاه...",
                 confirmRefusal: "تأكيد الرفض",
                 confirmSchedule: "تأكيد الجدولة",
                 cancelBtn: "إلغاء",
                 alertReason: "أدخل السبب",
-                currency: "د.م"
+                currency: "د.م",
+                reasons: [
+                    "الهاتف مغلق 📴",
+                    "الزبون رفض الطلب ❌",
+                    "العنوان غير واضح 📍",
+                    "غير متواجد حالياً ⏳"
+                ]
             },
             fr: {
                 titlePrefix: "Livreur",
@@ -73,12 +80,18 @@
                 deliveredBtn: "✅ Livré",
                 refusedBtn: "❌ Refusé",
                 scheduleBtn: "📅 Planifié",
-                refusalPlaceholder: "Motif du refus...",
+                refusalPlaceholder: "Motif du refus ou choisissez ci-dessus...",
                 confirmRefusal: "Confirmer le refus",
                 confirmSchedule: "Confirmer la date",
                 cancelBtn: "Annuler",
                 alertReason: "Veuillez entrer le motif",
-                currency: "DH"
+                currency: "DH",
+                reasons: [
+                    "Téléphone éteint 📴",
+                    "Client a refusé ❌",
+                    "Adresse floue 📍",
+                    "Absent pour le moment ⏳"
+                ]
             },
             en: {
                 titlePrefix: "Courier",
@@ -89,12 +102,18 @@
                 deliveredBtn: "✅ Delivered",
                 refusedBtn: "❌ Refused",
                 scheduleBtn: "📅 Schedule",
-                refusalPlaceholder: "Refusal reason...",
+                refusalPlaceholder: "Refusal reason or select above...",
                 confirmRefusal: "Confirm Refusal",
                 confirmSchedule: "Confirm Schedule",
                 cancelBtn: "Cancel",
                 alertReason: "Please enter a reason",
-                currency: "DH"
+                currency: "DH",
+                reasons: [
+                    "Phone off 📴",
+                    "Customer refused ❌",
+                    "Unclear address 📍",
+                    "Not available ⏳"
+                ]
             }
         };
 
@@ -112,9 +131,9 @@
                 const btn = document.getElementById(`c-lang-${l}`);
                 if (btn) {
                     if (l === lang) {
-                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
+                        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
                     } else {
-                        btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
+                        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
                     }
                 }
             });
@@ -254,6 +273,10 @@
             document.getElementById('schedule-box-' + id).classList.add('hidden');
         }
 
+        function setReasonText(id, text) {
+            document.getElementById('reason-input-' + id).value = text;
+        }
+
         async function confirmRefusal(id) {
             const reason = document.getElementById('reason-input-' + id).value.trim();
             if(!reason) return alert(courierTranslations[currentCourierLang].alertReason);
@@ -281,9 +304,10 @@
             const pendingOrders = orders.filter(o => o.status === 'pending');
             document.getElementById('pendingBadge').textContent = `${pendingOrders.length} ${courierTranslations[currentCourierLang].pendingBadgeText}`;
             const container = document.getElementById('courierOrdersList');
+            const langData = courierTranslations[currentCourierLang];
 
             if (pendingOrders.length === 0) {
-                container.innerHTML = `<div class="glass-card p-12 text-center rounded-3xl text-slate-400 text-xs">${courierTranslations[currentCourierLang].noOrders}</div>`;
+                container.innerHTML = `<div class="glass-card p-12 text-center rounded-3xl text-slate-400 text-xs">${langData.noOrders}</div>`;
                 return;
             }
 
@@ -291,35 +315,45 @@
                 <div class="glass-card rounded-3xl p-5 shadow-xl text-white">
                     <div class="flex justify-between items-center mb-3">
                         <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-xl">📦 ${order.productName}</span>
-                        <span class="font-black text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-xl">${order.price} ${courierTranslations[currentCourierLang].currency}</span>
+                        <span class="font-black text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-xl">${order.price} ${langData.currency}</span>
                     </div>
                     <p class="text-sm mb-4 font-bold text-slate-200">📍 ${order.address}</p>
                     <div class="grid grid-cols-2 gap-2.5 mb-3">
                         <a href="tel:${order.phone}" class="bg-blue-600 hover:bg-blue-700 text-center py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm flex items-center justify-center gap-1.5">📞 ${order.phone}</a>
                         <a href="${getClientWhatsAppUrl(order.phone, order.productName, order.price, order.address)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-center py-3 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-smooth shadow-sm">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> ${courierTranslations[currentCourierLang].whatsappBtn}
+                            <i class="fa-brands fa-whatsapp text-sm"></i> ${langData.whatsappBtn}
                         </a>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="markDelivered('${order.id}')" class="bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].deliveredBtn}</button>
-                        <button onclick="showRefusalBox('${order.id}')" class="bg-rose-600 hover:bg-rose-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].refusedBtn}</button>
-                        <button onclick="showScheduleBox('${order.id}')" class="bg-sky-600 hover:bg-sky-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].scheduleBtn}</button>
+                        <button onclick="markDelivered('${order.id}')" class="bg-emerald-600 hover:bg-emerald-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${langData.deliveredBtn}</button>
+                        <button onclick="showRefusalBox('${order.id}')" class="bg-rose-600 hover:bg-rose-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${langData.refusedBtn}</button>
+                        <button onclick="showScheduleBox('${order.id}')" class="bg-sky-600 hover:bg-sky-700 py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm">${langData.scheduleBtn}</button>
                     </div>
-                    <div id="refusal-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-800">
-                        <input type="text" id="reason-input-${order.id}" placeholder="${courierTranslations[currentCourierLang].refusalPlaceholder}" class="w-full px-3.5 py-3 bg-slate-900 border border-slate-700 rounded-2xl text-xs mb-2.5 text-white">
+                    
+                    <!-- قسم سبب الرفض مع الأسباب الجاهزة السريعة -->
+                    <div id="refusal-box-${order.id}" class="hidden mt-4 pt-3 border-t border-slate-800">
+                        <div class="flex flex-wrap gap-1.5 mb-2.5">
+                            ${langData.reasons.map(r => `
+                                <button onclick="setReasonText('${order.id}', '${r}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-semibold px-2.5 py-1.5 rounded-xl border border-slate-700 transition-smooth">
+                                    ${r}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <input type="text" id="reason-input-${order.id}" placeholder="${langData.refusalPlaceholder}" class="w-full px-3.5 py-3 bg-slate-900 border border-slate-700 rounded-2xl text-xs mb-2.5 text-white">
                         <div class="flex gap-2">
-                            <button onclick="confirmRefusal('${order.id}')" class="flex-1 bg-rose-600 hover:bg-rose-700 py-2.5 rounded-2xl text-xs font-bold transition-smooth">${courierTranslations[currentCourierLang].confirmRefusal}</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs transition-smooth">${courierTranslations[currentCourierLang].cancelBtn}</button>
+                            <button onclick="confirmRefusal('${order.id}')" class="flex-1 bg-rose-600 hover:bg-rose-700 py-2.5 rounded-2xl text-xs font-bold transition-smooth">${langData.confirmRefusal}</button>
+                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs transition-smooth">${langData.cancelBtn}</button>
                         </div>
                     </div>
+
                     <div id="schedule-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-800 text-xs">
                         <div class="grid grid-cols-2 gap-2 mb-2.5">
                             <input type="date" id="sched-date-${order.id}" class="bg-slate-900 p-3 rounded-2xl border border-slate-700 text-white">
                             <input type="time" id="sched-time-${order.id}" class="bg-slate-900 p-3 rounded-2xl border border-slate-700 text-white">
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="confirmSchedule('${order.id}')" class="flex-1 bg-sky-600 hover:bg-sky-700 py-2.5 rounded-2xl font-bold transition-smooth">${courierTranslations[currentCourierLang].confirmSchedule}</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-smooth">${courierTranslations[currentCourierLang].cancelBtn}</button>
+                            <button onclick="confirmSchedule('${order.id}')" class="flex-1 bg-sky-600 hover:bg-sky-700 py-2.5 rounded-2xl font-bold transition-smooth">${langData.confirmSchedule}</button>
+                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-smooth">${langData.cancelBtn}</button>
                         </div>
                     </div>
                 </div>
