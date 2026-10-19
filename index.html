@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simo Chop - Seller Dashboard</title>
     <script>
-        // نظام الحماية: إذا لم يكن مسجلاً للدخول، حوله فوراً لصفحة الدخول
+        // نظام الحماية: التحقق من تسجيل الدخول
         if (localStorage.getItem('SIMO_LOGGED_IN') !== 'true') {
             window.location.href = 'login.html';
         }
@@ -26,20 +26,22 @@
     <header class="glass-header sticky top-0 z-50 shadow-lg">
         <div class="max-w-6xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
             
+            <!-- أزرار اللغات مصغرة وفي اليمين -->
             <div class="flex items-center gap-1 bg-slate-800/80 border border-slate-700/80 rounded-xl p-0.5 shadow-inner">
-                <button onclick="changeLanguage('ar')" id="lang-ar" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">العربية</button>
-                <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">FR</button>
-                <button onclick="changeLanguage('en')" id="lang-en" class="px-2.5 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">EN</button>
+                <button onclick="changeLanguage('ar')" id="lang-ar" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">العربية</button>
+                <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
+                <button onclick="changeLanguage('en')" id="lang-en" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
             </div>
 
+            <!-- عنوان لوحة التحكم وشعار المتجر في الشمال (اليسار) -->
             <div class="flex items-center gap-3">
-                <button onclick="logoutAdmin()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs font-bold px-3 py-1.5 rounded-xl border border-rose-900/50 transition-smooth" title="تسجيل الخروج">
+                <button onclick="logoutAdmin()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-rose-900/50 transition-smooth" title="تسجيل الخروج">
                     <i class="fa-solid fa-power-off"></i>
                 </button>
-                <div class="text-right">
+                <div class="text-left">
                     <h1 class="text-sm font-black tracking-wide text-white" data-i18n="storeTitle">لوحة تحكم البائع</h1>
-                    <p class="text-[11px] text-emerald-400 font-bold flex items-center justify-end gap-1.5 mt-0.5">
-                        <span data-i18n="connected">متصل بالسيرفر مع اللفرور</span> <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <p class="text-[11px] text-emerald-400 font-bold flex items-center justify-start gap-1.5 mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span data-i18n="connected">متصل بالسيرفر مع اللفرور</span>
                     </p>
                 </div>
                 <div class="bg-indigo-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-base font-black flex-shrink-0">
@@ -48,6 +50,7 @@
             </div>
         </div>
 
+        <!-- شريط الأزرار التحتية (نسخ الرابط وصفحة اللفرور) -->
         <div class="max-w-6xl mx-auto px-4 pb-3.5 flex justify-between items-center gap-3 border-t border-slate-800/60 pt-3">
             <button onclick="copyCourierLink()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl border border-slate-700 shadow-xs transition-smooth flex items-center gap-2">
                 <i class="fa-solid fa-link"></i> <span data-i18n="copyLink">نسخ الرابط</span>
@@ -491,9 +494,9 @@
                 const btn = document.getElementById(`lang-${l}`);
                 if (btn) {
                     if (l === lang) {
-                        btn.className = "px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
+                        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
                     } else {
-                        btn.className = "px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
+                        btn.className = "px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
                     }
                 }
             });
