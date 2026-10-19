@@ -26,12 +26,12 @@
         <form id="courierLoginForm" class="space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم المستخدم (Username)</label>
-                <input type="text" id="courierUser" required placeholder="username livreur"
+                <input type="text" id="courierUser" required placeholder="livreur"
                     class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-smooth" dir="ltr">
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-300 mb-1.5">كلمة المرور (Password)</label>
-                <input type="password" id="courierPass" required placeholder="***********"
+                <input type="password" id="courierPass" required placeholder="••••••••"
                     class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-smooth" dir="ltr">
             </div>
             
@@ -47,16 +47,17 @@
     </div>
 
     <script>
-        const COURIER_PASS = "5678"; // كلمة المرور الخاصة باللفرور
+        // بيانات الدخول الخاصة باللفرور (يمكنك تغييرها كما تشاء)
+        const COURIER_USER = "livreur";
+        const COURIER_PASS = "5678";
 
         document.getElementById('courierLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const u = document.getElementById('courierUser').value.trim();
             const p = document.getElementById('courierPass').value.trim();
 
-            if (u !== "" && p === COURIER_PASS) {
+            if (u === COURIER_USER && p === COURIER_PASS) {
                 localStorage.setItem('COURIER_LOGGED_IN', 'true');
-                localStorage.setItem('COURIER_USERNAME', u); // حفظ اسم المستخدم تلقائياً
                 window.location.href = 'livreur.html';
             } else {
                 document.getElementById('courierErrorMsg').classList.remove('hidden');
