@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="courierHtmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,19 +16,28 @@
 <body class="min-h-screen pb-12">
 
     <header class="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-50 shadow-md">
-        <div class="max-w-lg mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <button onclick="changeCourierNamePrompt()" class="bg-emerald-500/20 text-emerald-400 p-2.5 rounded-2xl text-xl hover:bg-emerald-500/30 active-scale transition-smooth" title="تغيير اسم اللفرور">
+        <div class="max-w-lg mx-auto px-4 py-3 flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+                <button onclick="changeCourierNamePrompt()" class="bg-emerald-500/20 text-emerald-400 p-2 rounded-2xl text-lg hover:bg-emerald-500/30 active-scale transition-smooth" title="تغيير اسم اللفرور">
                     🛵
                 </button>
                 <div>
-                    <h1 class="text-base font-extrabold text-white" id="courierTitleName">صفحة اللفرور</h1>
-                    <p class="text-[11px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> متصل بالسيرفر لحظياً
+                    <h1 class="text-sm font-extrabold text-white" id="courierTitleName">صفحة اللفرور</h1>
+                    <p class="text-[10px] text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> <span data-i18n="connected">متصل بالسيرفر لحظياً</span>
                     </p>
                 </div>
             </div>
-            <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-xs" id="pendingBadge">0 قيد الانتظار</span>
+
+            <!-- زر تغيير اللغة للفرور -->
+            <div class="flex items-center gap-2">
+                <div class="bg-slate-900 border border-slate-700 rounded-xl p-1 flex items-center gap-1 shadow-inner">
+                    <button onclick="changeCourierLanguage('ar')" id="c-lang-ar" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white">AR</button>
+                    <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white">FR</button>
+                    <button onclick="changeCourierLanguage('en')" id="c-lang-en" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white">EN</button>
+                </div>
+                <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-full shadow-xs whitespace-nowrap" id="pendingBadge">0 <span data-i18n="pendingBadgeText">قيد الانتظار</span></span>
+            </div>
         </div>
     </header>
 
@@ -37,6 +46,82 @@
     </main>
 
     <script>
+        const courierTranslations = {
+            ar: {
+                connected: "متصل بالسيرفر لحظياً",
+                pendingBadgeText: "قيد الانتظار",
+                noOrders: "لا توجد طلبات قيد الانتظار حالياً",
+                whatsappBtn: "واتساب المستلم",
+                deliveredBtn: "✅ تم الإستلام",
+                refusedBtn: "❌ رفض",
+                scheduleBtn: "📅 جدولة",
+                refusalPlaceholder: "سبب الرفض...",
+                confirmRefusal: "تأكيد الرفض",
+                confirmSchedule: "تأكيد الجدولة",
+                cancelBtn: "إلغاء",
+                alertReason: "أدخل السبب"
+            },
+            fr: {
+                connected: "Connecté en temps réel",
+                pendingBadgeText: "En attente",
+                noOrders: "Aucune commande en attente",
+                whatsappBtn: "WhatsApp Client",
+                deliveredBtn: "✅ Livré",
+                refusedBtn: "❌ Refusé",
+                scheduleBtn: "📅 Planifié",
+                refusalPlaceholder: "Motif du refus...",
+                confirmRefusal: "Confirmer le refus",
+                confirmSchedule: "Confirmer la date",
+                cancelBtn: "Annuler",
+                alertReason: "Veuillez entrer le motif"
+            },
+            en: {
+                connected: "Connected in real-time",
+                pendingBadgeText: "Pending",
+                noOrders: "No pending orders currently",
+                whatsappBtn: "Client WhatsApp",
+                deliveredBtn: "✅ Delivered",
+                refusedBtn: "❌ Refused",
+                scheduleBtn: "📅 Schedule",
+                refusalPlaceholder: "Refusal reason...",
+                confirmRefusal: "Confirm Refusal",
+                confirmSchedule: "Confirm Schedule",
+                cancelBtn: "Cancel",
+                alertReason: "Please enter a reason"
+            }
+        };
+
+        let currentCourierLang = localStorage.getItem('COURIER_LANG') || 'ar';
+
+        function changeCourierLanguage(lang) {
+            currentCourierLang = lang;
+            localStorage.setItem('COURIER_LANG', lang);
+
+            const root = document.getElementById('courierHtmlRoot');
+            root.setAttribute('lang', lang);
+            root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+            ['ar', 'fr', 'en'].forEach(l => {
+                const btn = document.getElementById(`c-lang-${l}`);
+                if (btn) {
+                    if (l === lang) {
+                        btn.className = "px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
+                    } else {
+                        btn.className = "px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (courierTranslations[lang][key]) {
+                    el.textContent = courierTranslations[lang][key];
+                }
+            });
+
+            renderCourierOrders();
+        }
+
         const SUPABASE_URL = "https://odrqwpcwcdfftjxatkyx.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kcnF3cGN3Y2RmZnRqeGF0a3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzNjA2MzAsImV4cCI6MjEwNzkzNjYzMH0.Fvjz335UThZ0OfnwpdKCoO2Zg_WQA8jinFJnGV4CrB0";
 
@@ -66,12 +151,14 @@
         updateCourierHeaderName();
 
         async function loadDataFromSupabase() {
-            const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
-            if (data && data.payload) {
-                orders = data.payload.orders || [];
-                colors = data.payload.colors || DEFAULT_COLORS;
-                renderCourierOrders();
-            }
+            try {
+                const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
+                if (data && data.payload) {
+                    orders = data.payload.orders || [];
+                    colors = data.payload.colors || DEFAULT_COLORS;
+                    if (!activeActionId) renderCourierOrders();
+                }
+            } catch (e) {}
         }
 
         async function saveAllToSupabase() {
@@ -79,7 +166,7 @@
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        sb.channel('public:app_state_courier')
+        sb.channel('public:app_state_courier_fast')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
@@ -90,6 +177,8 @@
           .subscribe();
 
         loadDataFromSupabase();
+        setInterval(loadDataFromSupabase, 2000);
+        changeCourierLanguage(currentCourierLang);
 
         function updateCourierHeaderName() {
             const name = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
@@ -158,7 +247,7 @@
 
         async function confirmRefusal(id) {
             const reason = document.getElementById('reason-input-' + id).value.trim();
-            if(!reason) return alert('أدخل السبب');
+            if(!reason) return alert(courierTranslations[currentCourierLang].alertReason);
             const idx = orders.findIndex(o => o.id === id);
             orders[idx].status = 'refused';
             orders[idx].refusalReason = reason;
@@ -181,11 +270,11 @@
 
         function renderCourierOrders() {
             const pendingOrders = orders.filter(o => o.status === 'pending');
-            document.getElementById('pendingBadge').textContent = `${pendingOrders.length} قيد الانتظار`;
+            document.getElementById('pendingBadge').textContent = `${pendingOrders.length} ${courierTranslations[currentCourierLang].pendingBadgeText}`;
             const container = document.getElementById('courierOrdersList');
 
             if (pendingOrders.length === 0) {
-                container.innerHTML = `<div class="bg-slate-800/80 border border-slate-700 p-12 text-center rounded-3xl text-slate-400 text-xs">لا توجد طلبات قيد الانتظار حالياً</div>`;
+                container.innerHTML = `<div class="bg-slate-800/80 border border-slate-700 p-12 text-center rounded-3xl text-slate-400 text-xs">${courierTranslations[currentCourierLang].noOrders}</div>`;
                 return;
             }
 
@@ -199,19 +288,19 @@
                     <div class="grid grid-cols-2 gap-2.5 mb-3">
                         <a href="tel:${order.phone}" class="bg-blue-600 hover:bg-blue-700 text-center py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">📞 ${order.phone}</a>
                         <a href="${getClientWhatsAppUrl(order.phone, order.productName, order.price, order.address)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-center py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-smooth shadow-sm">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> واتساب المستلم
+                            <i class="fa-brands fa-whatsapp text-sm"></i> ${courierTranslations[currentCourierLang].whatsappBtn}
                         </a>
                     </div>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="markDelivered('${order.id}')" class="bg-emerald-600 hover:bg-emerald-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">✅ تم الإستلام</button>
-                        <button onclick="showRefusalBox('${order.id}')" class="bg-rose-600 hover:bg-rose-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">❌ رفض</button>
-                        <button onclick="showScheduleBox('${order.id}')" class="bg-sky-600 hover:bg-sky-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">📅 جدولة</button>
+                        <button onclick="markDelivered('${order.id}')" class="bg-emerald-600 hover:bg-emerald-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].deliveredBtn}</button>
+                        <button onclick="showRefusalBox('${order.id}')" class="bg-rose-600 hover:bg-rose-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].refusedBtn}</button>
+                        <button onclick="showScheduleBox('${order.id}')" class="bg-sky-600 hover:bg-sky-700 py-2.5 rounded-xl font-bold text-xs transition-smooth shadow-sm">${courierTranslations[currentCourierLang].scheduleBtn}</button>
                     </div>
                     <div id="refusal-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-700">
-                        <input type="text" id="reason-input-${order.id}" placeholder="سبب الرفض..." class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs mb-2.5 text-white">
+                        <input type="text" id="reason-input-${order.id}" placeholder="${courierTranslations[currentCourierLang].refusalPlaceholder}" class="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs mb-2.5 text-white">
                         <div class="flex gap-2">
-                            <button onclick="confirmRefusal('${order.id}')" class="flex-1 bg-rose-600 hover:bg-rose-700 py-2 rounded-xl text-xs font-bold transition-smooth">تأكيد الرفض</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs transition-smooth">إلغاء</button>
+                            <button onclick="confirmRefusal('${order.id}')" class="flex-1 bg-rose-600 hover:bg-rose-700 py-2 rounded-xl text-xs font-bold transition-smooth">${courierTranslations[currentCourierLang].confirmRefusal}</button>
+                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-700 hover:bg-slate-600 rounded-xl text-xs transition-smooth">${courierTranslations[currentCourierLang].cancelBtn}</button>
                         </div>
                     </div>
                     <div id="schedule-box-${order.id}" class="hidden mt-3 pt-3 border-t border-slate-700 text-xs">
@@ -220,8 +309,8 @@
                             <input type="time" id="sched-time-${order.id}" class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 text-white">
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="confirmSchedule('${order.id}')" class="flex-1 bg-sky-600 hover:bg-sky-700 py-2 rounded-xl font-bold transition-smooth">تأكيد الجدولة</button>
-                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-700 hover:bg-slate-600 rounded-xl transition-smooth">إلغاء</button>
+                            <button onclick="confirmSchedule('${order.id}')" class="flex-1 bg-sky-600 hover:bg-sky-700 py-2 rounded-xl font-bold transition-smooth">${courierTranslations[currentCourierLang].confirmSchedule}</button>
+                            <button onclick="cancelActionBox('${order.id}')" class="px-4 bg-slate-700 hover:bg-slate-600 rounded-xl transition-smooth">${courierTranslations[currentCourierLang].cancelBtn}</button>
                         </div>
                     </div>
                 </div>
