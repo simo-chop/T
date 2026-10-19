@@ -24,14 +24,12 @@
     <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 shadow-lg">
         <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
             
-            <!-- أزرار اللغات مصغرة وفي اليمين -->
             <div class="flex items-center gap-1 bg-slate-800/80 border border-slate-700/80 rounded-xl p-0.5 shadow-inner">
                 <button onclick="changeCourierLanguage('ar')" id="c-lang-ar" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">AR</button>
-                <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
+                <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
                 <button onclick="changeCourierLanguage('en')" id="c-lang-en" class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
             </div>
 
-            <!-- عنوان لوحة اللفرور وشعار الدراجة في الشمال (اليسار) -->
             <div class="flex items-center gap-3">
                 <button onclick="logoutCourier()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-rose-900/50 transition-smooth" title="تسجيل الخروج">
                     <i class="fa-solid fa-power-off"></i>
@@ -80,6 +78,7 @@
                 cancelBtn: "إلغاء",
                 alertReason: "أدخل السبب",
                 currency: "د.م",
+                quantityText: "العدد",
                 reasons: [
                     "الهاتف مغلق 📴",
                     "الزبون رفض الطلب ❌",
@@ -102,6 +101,7 @@
                 cancelBtn: "Annuler",
                 alertReason: "Veuillez entrer le motif",
                 currency: "DH",
+                quantityText: "Qté",
                 reasons: [
                     "Téléphone éteint 📴",
                     "Client a refusé ❌",
@@ -124,6 +124,7 @@
                 cancelBtn: "Cancel",
                 alertReason: "Please enter a reason",
                 currency: "DH",
+                quantityText: "Qty",
                 reasons: [
                     "Phone off 📴",
                     "Customer refused ❌",
@@ -171,18 +172,7 @@
         const { createClient } = supabase;
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const DEFAULT_COLORS = [
-            { id: 'black', name: 'مظلة باللون الأسود', stock: 117, price: 130 },
-            { id: 'black_2', name: 'منيطة باللون الأسود', stock: 120, price: 120 },
-            { id: 'white_2', name: 'منيطة باللون الأبيض', stock: 50, price: 120 },
-            { id: 'blue', name: 'مظلة باللون الأزرق', stock: 97, price: 130 },
-            { id: 'gray', name: 'مظلة باللون الرمادي', stock: 78, price: 130 },
-            { id: 'pink', name: 'مظلة باللون الوردي', stock: 65, price: 130 },
-            { id: 'green', name: 'مظلة باللون الزيتي', stock: 53, price: 130 }
-        ];
-
         let orders = [];
-        let colors = JSON.parse(JSON.stringify(DEFAULT_COLORS));
         let activeActionId = null;
 
         updateCourierHeaderName();
@@ -192,22 +182,25 @@
                 const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
                 if (data && data.payload) {
                     orders = data.payload.orders || [];
-                    colors = data.payload.colors || DEFAULT_COLORS;
                     if (!activeActionId) renderCourierOrders();
                 }
             } catch (e) {}
         }
 
         async function saveAllToSupabase() {
-            const payload = { orders, colors };
+            // جلب البيانات الحالية وتحديث الطلبات لضمان عدم ضياع المخزون عند تسليم الطلب
+            const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
+            let colors = data && data.payload ? data.payload.colors : [];
+            let courierDebt = data && data.payload ? (data.payload.courierDebt || 0) : 0;
+
+            const payload = { orders, colors, courierDebt };
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        sb.channel('public:app_state_courier_v7')
+        sb.channel('public:app_state_courier_v8')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
-                  colors = payload.new.payload.colors || DEFAULT_COLORS;
                   if (!activeActionId) renderCourierOrders();
               }
           })
@@ -230,22 +223,31 @@
             const order = orders[idx];
             order.status = 'delivered';
             order.deliveredAt = Date.now();
+            const orderQty = order.quantity || 1;
 
-            const prod = colors.find(c => c.id === order.productId);
-            if (prod) {
-                prod.stock = Math.max(0, prod.stock - 1);
-            }
+            // تحديث المخزون خصماً بالكمية المطلوبة
+            try {
+                const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
+                if (data && data.payload) {
+                    let colors = data.payload.colors || [];
+                    let prod = colors.find(c => c.id === order.productId);
+                    if (prod) {
+                        prod.stock = Math.max(0, prod.stock - orderQty);
+                    }
+                    let courierDebt = data.payload.courierDebt || 0;
+                    await sb.from('app_state').upsert({ id: 'simo_store_data', payload: { orders, colors, courierDebt } });
+                }
+            } catch(e) {}
 
             activeActionId = null;
-            await saveAllToSupabase();
             renderCourierOrders();
 
             const sellerWhatsAppNumber = '212660005716';
-            const waMsg = `✅ تم استلام الطلب بنجاح \n📍 العنوان: ${order.address} \n💰 الثمن: ${order.price} د.م`;
+            const waMsg = `✅ تم استلام الطلب بنجاح \n📦 المنتج: ${order.productName} (العدد: ${orderQty}) \n📍 العنوان: ${order.address} \n💰 الثمن: ${order.price} د.م`;
             window.open(`https://wa.me/${sellerWhatsAppNumber}?text=${encodeURIComponent(waMsg)}`, '_blank');
         }
 
-        function getClientWhatsAppUrl(phone, productName, price, address) {
+        function getClientWhatsAppUrl(phone, productName, quantity, price, address) {
             let clean = phone.replace(/[^0-9+]/g, '');
             if (clean.startsWith('06') || clean.startsWith('07')) {
                 clean = '212' + clean.substring(1);
@@ -253,7 +255,8 @@
                 clean = clean.substring(1);
             }
             const username = localStorage.getItem('COURIER_USERNAME') || 'اللفرور';
-            const msg = `👋 السلام عليكم 👋\n\n🛵 معكم : *${username}* اللفرور\n📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}*\n💵 المبلغ المستحق : *${price}* درهم\n📌 المرجو تأكيد عنوانكم : *${address}*`;
+            const qtyStr = quantity ? ` (العدد: ${quantity})` : '';
+            const msg = `👋 السلام عليكم 👋\n\n🛵 معكم : *${username}* اللفرور\n📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}* ${qtyStr}\n💵 المبلغ المستحق : *${price}* درهم\n📌 المرجو تأكيد عنوانكم : *${address}*`;
             return `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
         }
 
@@ -311,16 +314,21 @@
                 return;
             }
 
-            container.innerHTML = pendingOrders.map(order => `
+            container.innerHTML = pendingOrders.map(order => {
+                const qtyVal = order.quantity || 1;
+                return `
                 <div class="glass-card rounded-3xl p-5 shadow-xl text-white">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-xl">📦 ${order.productName}</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-xl">📦 ${order.productName}</span>
+                            <span class="text-xs bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-xl">${langData.quantityText}: ${qtyVal}</span>
+                        </div>
                         <span class="font-black text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-xl">${order.price} ${langData.currency}</span>
                     </div>
                     <p class="text-sm mb-4 font-bold text-slate-200">📍 ${order.address}</p>
                     <div class="grid grid-cols-2 gap-2.5 mb-3">
                         <a href="tel:${order.phone}" class="bg-blue-600 hover:bg-blue-700 text-center py-3 rounded-2xl font-extrabold text-xs transition-smooth shadow-sm flex items-center justify-center gap-1.5">📞 ${order.phone}</a>
-                        <a href="${getClientWhatsAppUrl(order.phone, order.productName, order.price, order.address)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-center py-3 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-smooth shadow-sm">
+                        <a href="${getClientWhatsAppUrl(order.phone, order.productName, qtyVal, order.price, order.address)}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-center py-3 rounded-2xl font-extrabold text-xs flex items-center justify-center gap-1.5 transition-smooth shadow-sm">
                             <i class="fa-brands fa-whatsapp text-sm"></i> ${langData.whatsappBtn}
                         </a>
                     </div>
@@ -356,7 +364,8 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
     </script>
 </body>
