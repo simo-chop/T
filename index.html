@@ -37,9 +37,6 @@
                 </button>
                 <div class="text-left">
                     <h1 class="text-sm font-black tracking-wide text-white" data-i18n="storeTitle">لوحة تحكم البائع</h1>
-                    <p class="text-[11px] text-emerald-400 font-bold flex items-center justify-start gap-1.5 mt-0.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> <span data-i18n="connected">متصل بالسيرفر مع اللفرور</span>
-                    </p>
                 </div>
                 <div class="bg-indigo-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-base font-black flex-shrink-0">
                     SC
@@ -338,7 +335,6 @@
         const translations = {
             ar: {
                 storeTitle: "لوحة تحكم البائع",
-                connected: "متصل بالسيرفر مع اللفرور",
                 courierPage: "صفحة اللفرور",
                 copyLink: "نسخ الرابط",
                 deliveryManagement: "إدارة التوصيل",
@@ -390,7 +386,6 @@
             },
             fr: {
                 storeTitle: "Tableau de bord Vendeur",
-                connected: "Connecté au serveur avec le livreur",
                 courierPage: "Page Livreur",
                 copyLink: "Copier le lien",
                 deliveryManagement: "Gestion des Livraisons",
@@ -442,7 +437,6 @@
             },
             en: {
                 storeTitle: "Seller Dashboard",
-                connected: "Connected to server with courier",
                 courierPage: "Courier Page",
                 copyLink: "Copy Link",
                 deliveryManagement: "Delivery Management",
@@ -748,7 +742,7 @@
             const idx = orders.findIndex(o => o.id === id);
             if (idx !== -1) {
                 orders[idx].status = 'pending';
-                orders[idx].courierName = ''; // مسح اسم اللفرور عند إعادته للانتظار
+                orders[idx].courierName = '';
                 saveAllToSupabase();
                 renderSellerOrders();
                 updateSellerStats();
@@ -815,18 +809,20 @@
 
             container.innerHTML = filtered.map(order => {
                 let timeStr = '';
-                if (order.status === 'delivered' && order.deliveredAt) {
-                    const d = new Date(order.deliveredAt);
+                // إظهار التاريخ والوقت في الطلبات المسلمة أو المرفوضة
+                const actionTime = order.deliveredAt || order.createdAt;
+                if ((order.status === 'delivered' || order.status === 'refused') && actionTime) {
+                    const d = new Date(actionTime);
                     timeStr = `
-                        <div class="mt-2.5 pt-2.5 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span>${d.toLocaleDateString()} - ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold flex items-center justify-between gap-1.5">
+                            <span class="flex items-center gap-1"><i class="fa-solid fa-calendar-check"></i> ${d.toLocaleDateString()} - ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            ${order.courierName ? `<span class="text-indigo-300">🛵 اللفرور: ${order.courierName}</span>` : ''}
                         </div>
                     `;
                 }
 
                 const qtyVal = order.quantity || 1;
-                const courierBadge = order.courierName ? `<span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-lg text-[10px] ml-1">🛵 اللفرور: ${order.courierName}</span>` : '';
+                const courierBadge = (order.courierName && order.status !== 'refused' && order.status !== 'delivered') ? `<span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-lg text-[10px] ml-1">🛵 اللفرور: ${order.courierName}</span>` : '';
 
                 return `
                 <div class="border border-slate-800 rounded-2xl p-4 bg-slate-900/80 shadow-md transition-smooth hover:border-slate-700">
