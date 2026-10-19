@@ -191,7 +191,7 @@
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        sb.channel('public:app_state_courier_v2')
+        sb.channel('public:app_state_courier_v4')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
@@ -202,7 +202,7 @@
           .subscribe();
 
         loadDataFromSupabase();
-        setInterval(loadDataFromSupabase, 2000);
+        setInterval(loadDataFromSupabase, 1500);
         changeCourierLanguage(currentCourierLang);
 
         function updateCourierHeaderName() {
@@ -251,12 +251,7 @@
                 clean = clean.substring(1);
             }
             const courierName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const courierName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const msg = `👋 السلام عليكم 👋\n 
- 🛵 معكم : *${courierName}* اللفرور \n
-📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}* \n
-💵 المبلغ المستحق : *${price}* درهم \n
-📌 المرجو تأكيد عنوانكم : *${address}*`;
+            const msg = `👋 السلام عليكم 👋\n\n🛵 معكم : *${courierName}* اللفرور\n📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}*\n💵 المبلغ المستحق : *${price}* درهم\n📌 المرجو تأكيد عنوانكم : *${address}*`;
             return `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
         }
 
