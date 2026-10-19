@@ -16,7 +16,6 @@
 </head>
 <body class="min-h-screen pb-24 text-slate-900">
 
-    <!-- شريط العلوي الفاخر -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
         <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -32,7 +31,6 @@
             </div>
 
             <div class="flex items-center gap-2.5 flex-wrap">
-                <!-- أزرار اللغات -->
                 <div class="bg-slate-100 border border-slate-200 rounded-xl p-1 flex items-center gap-1">
                     <button onclick="changeLanguage('ar')" id="lang-ar" class="px-3 py-1 text-xs font-bold rounded-lg transition-smooth">العربية</button>
                     <button onclick="changeLanguage('fr')" id="lang-fr" class="px-3 py-1 text-xs font-bold rounded-lg transition-smooth">Français</button>
@@ -48,7 +46,6 @@
         </div>
     </header>
 
-    <!-- التنقل بين الأقسام -->
     <div class="max-w-6xl mx-auto px-4 mt-6">
         <div class="bg-slate-200/70 p-1.5 rounded-2xl flex gap-2 max-w-md">
             <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-indigo-600 text-white transition-smooth shadow-sm flex items-center justify-center gap-2">
@@ -61,11 +58,7 @@
     </div>
 
     <main class="max-w-6xl mx-auto px-4 mt-6">
-        
-        <!-- قسم إدارة التوصيل -->
         <section id="seller-tab-delivery" class="space-y-6">
-            
-            <!-- إحصائيات سريعة -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-amber-500">
                     <p class="text-[11px] text-slate-500 font-bold" data-i18n="pending">قيد الانتظار</p>
@@ -94,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- بطاقات المالية الاحترافية -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-7 rounded-3xl shadow-xl border border-slate-800">
                 <div class="bg-white/5 p-5 rounded-2xl border border-white/10 flex flex-col justify-between">
                     <div>
@@ -115,7 +107,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- نموذج إضافة طلب -->
                 <div class="lg:col-span-1">
                     <div class="glass-panel p-6 rounded-3xl sticky top-24">
                         <h2 class="text-sm font-extrabold text-slate-900 mb-4 flex items-center gap-2.5">
@@ -156,7 +147,6 @@
                     </div>
                 </div>
 
-                <!-- قائمة متابعة الطلبات -->
                 <div class="lg:col-span-2">
                     <div class="glass-panel p-6 rounded-3xl">
                         <div class="mb-5">
@@ -184,7 +174,6 @@
             </div>
         </section>
 
-        <!-- قسم المخزون والمنتجات -->
         <section id="seller-tab-inventory" class="space-y-4 hidden">
             <div class="flex flex-wrap items-center justify-between gap-3 glass-panel p-5 rounded-3xl">
                 <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
@@ -203,7 +192,7 @@
         </section>
     </main>
 
-    <!-- نافذة تعديل المنتج -->
+    <!-- Modals -->
     <div id="price-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
@@ -231,7 +220,6 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة منتج جديد -->
     <div id="new-product-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
@@ -263,7 +251,6 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة شحنة واردة -->
     <div id="stock-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
@@ -287,7 +274,6 @@
         </div>
     </div>
 
-    <!-- كود JavaScript والترجمة المطور -->
     <script>
         const translations = {
             ar: {
@@ -659,8 +645,9 @@
         }
 
         function getCourierUrl() {
-            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-            return `${baseUrl}livreur.html?store=simo_tanger`;
+            const loc = window.location;
+            const baseUrl = loc.protocol + "//" + loc.host + loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+            return `${baseUrl}livreur.html`;
         }
 
         function openCourierPage() { window.open(getCourierUrl(), '_blank'); }
