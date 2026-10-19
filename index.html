@@ -9,171 +9,182 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; }
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .toast-anim { animation: slideIn 0.3s ease-out forwards; }
+        .transition-smooth { transition: all 0.25s ease-in-out; }
     </style>
 </head>
-<body class="min-h-screen pb-20 bg-slate-100 text-slate-800">
+<body class="min-h-screen pb-24 bg-slate-50 text-slate-800">
 
-    <div id="toastContainer" class="fixed top-20 left-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-3">
+    <!-- الترويسة الرئيسية -->
+    <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <span class="bg-indigo-900 p-2 rounded-xl text-xl">🏪</span>
+                <div class="bg-indigo-800 p-2.5 rounded-2xl shadow-inner text-xl">🏪</div>
                 <div>
-                    <h1 class="text-lg font-extrabold">لوحة تحكم البائع والمخزون</h1>
-                    <p class="text-xs text-indigo-200">🟢 متصل بالسيرفر مع اللفرور</p>
+                    <h1 class="text-base font-extrabold tracking-wide">لوحة تحكم البائع والمخزون</h1>
+                    <p class="text-[11px] text-indigo-200 flex items-center gap-1.5 mt-0.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> متصل بالسيرفر مع اللفرور
+                    </p>
                 </div>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <button onclick="openCourierPage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold px-3 py-2 rounded-xl shadow transition">
-                    👁️ فتح صفحة اللفرور
+            <div class="flex items-center gap-2">
+                <button onclick="openCourierPage()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-extrabold px-3.5 py-2 rounded-xl shadow transition-smooth">
+                    👁️ صفحة اللفرور
                 </button>
-                <button onclick="copyCourierLink()" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-xl shadow transition">
-                    📲 نسخ رابط اللفرور
+                <button onclick="copyCourierLink()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow transition-smooth">
+                    📲 نسخ الرابط
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="bg-white border-b px-4 py-2 flex gap-2 sticky top-[73px] z-40 shadow-sm">
-        <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition">📦 إدارة التوصيل</button>
-        <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition">☂️ المخزون والأسعار</button>
-    </div>
+    <!-- شريط التنقل بين الأقسام -->
+    <nav class="bg-white border-b px-4 py-2.5 sticky top-[69px] z-40 shadow-xs">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-smooth shadow-sm">📦 إدارة التوصيل</button>
+            <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200 transition-smooth">☂️ المخزون والأسعار</button>
+        </div>
+    </nav>
 
     <main class="max-w-4xl mx-auto px-4 mt-6">
         
         <!-- قسم إدارة التوصيل -->
-        <div id="seller-tab-delivery" class="space-y-6">
+        <section id="seller-tab-delivery" class="space-y-6">
+            
+            <!-- إحصائيات الطلبات السريعة -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-amber-500">
-                    <p class="text-xs text-slate-500 font-bold">قيد الانتظار</p>
-                    <p class="text-2xl font-extrabold text-amber-600 mt-1" id="statPending">0</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 border-r-4 border-r-amber-500">
+                    <p class="text-[11px] text-slate-400 font-bold">قيد الانتظار</p>
+                    <p class="text-xl font-extrabold text-amber-600 mt-1" id="statPending">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-sky-500">
-                    <p class="text-xs text-slate-500 font-bold">مجدول 📅</p>
-                    <p class="text-2xl font-extrabold text-sky-600 mt-1" id="statScheduled">0</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 border-r-4 border-r-sky-500">
+                    <p class="text-[11px] text-slate-400 font-bold">مجدول 📅</p>
+                    <p class="text-xl font-extrabold text-sky-600 mt-1" id="statScheduled">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-emerald-500">
-                    <p class="text-xs text-slate-500 font-bold">تم الإستلام</p>
-                    <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="statDelivered">0</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 border-r-4 border-r-emerald-500">
+                    <p class="text-[11px] text-slate-400 font-bold">تم الإستلام</p>
+                    <p class="text-xl font-extrabold text-emerald-600 mt-1" id="statDelivered">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-rose-500">
-                    <p class="text-xs text-slate-500 font-bold">رفض الإستلام</p>
-                    <p class="text-2xl font-extrabold text-rose-600 mt-1" id="statRefused">0</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 border-r-4 border-r-rose-500">
+                    <p class="text-[11px] text-slate-400 font-bold">رفض الإستلام</p>
+                    <p class="text-xl font-extrabold text-rose-600 mt-1" id="statRefused">0</p>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border-r-4 border-indigo-600">
-                    <p class="text-xs text-slate-500 font-bold">المحصل اليومي</p>
-                    <p class="text-xl font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> د.م</p>
+                <div class="bg-white p-3.5 rounded-2xl shadow-xs border border-slate-100 border-r-4 border-r-indigo-600">
+                    <p class="text-[11px] text-slate-400 font-bold">المحصل اليومي</p>
+                    <p class="text-lg font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> د.م</p>
                 </div>
-                <div class="bg-emerald-50 p-4 rounded-xl shadow-sm border-r-4 border-teal-600">
-                    <p class="text-xs text-teal-800 font-bold">المجموع الصافي</p>
-                    <p class="text-xl font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> د.م</p>
-                    <p class="text-[11px] text-teal-600 font-semibold mt-0.5">التوصيل: -<span id="statDeliveryFees">0</span> د.م</p>
+                <div class="bg-teal-50/50 p-3.5 rounded-2xl shadow-xs border border-teal-100 border-r-4 border-r-teal-600">
+                    <p class="text-[11px] text-teal-800 font-bold">المجموع الصافي</p>
+                    <p class="text-lg font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> د.م</p>
+                    <p class="text-[10px] text-teal-600 font-semibold">التوصيل: -<span id="statDeliveryFees">0</span> د.م</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-indigo-900 text-white p-5 rounded-2xl shadow-md">
-                <div class="bg-white/10 p-3.5 rounded-xl border border-white/10">
+            <!-- بطاقات الماليات -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-5 rounded-3xl shadow-lg">
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-xs">
                     <span class="text-xs text-indigo-200 font-semibold">المجموع الصافي الإجمالي</span>
                     <div id="box-net-total" class="text-2xl font-extrabold text-emerald-400 mt-1">0.00 د.م</div>
                     <span class="text-[10px] text-indigo-300">مجموع الطلبات المسلمة ناقص مصاريف التوصيل</span>
                 </div>
-                <div class="bg-white/10 p-3.5 rounded-xl border border-white/10 flex flex-col justify-between">
+                <div class="bg-white/10 p-4 rounded-2xl border border-white/10 backdrop-blur-xs flex flex-col justify-between">
                     <div>
                         <span class="text-xs text-indigo-200 font-semibold">المال المتبقي عند اللفرور (المحصل اليومي - التوصيل)</span>
                         <div id="box-courier-debt" class="text-2xl font-extrabold text-rose-300 mt-1">0.00 د.م</div>
                     </div>
-                    <button onclick="settleCourierDebt()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-lg transition active-scale text-center">
-                        💰 استلمت المال (تصفير)
+                    <button onclick="settleCourierDebt()" class="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-xl transition-smooth active:scale-95 text-center shadow-md">
+                        💰 استلمت المال (تصفير الحساب)
                     </button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- نموذج إضافة طلب -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100 sticky top-36">
-                        <h2 class="text-lg font-bold text-slate-800 mb-4">➕ إضافة طلب وتوصيل</h2>
-                        <form id="orderForm" class="space-y-3">
+                    <div class="bg-white p-5 rounded-3xl shadow-xs border border-slate-100 sticky top-36">
+                        <h2 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span class="bg-indigo-100 text-indigo-600 p-1.5 rounded-xl text-xs">➕</span> إضافة طلب جديد
+                        </h2>
+                        <form id="orderForm" class="space-y-3.5">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">اختر المنتج *</label>
-                                <select id="orderProductSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">اختر المنتج *</label>
+                                <select id="orderProductSelect" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></select>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">رقم الهاتف *</label>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">رقم الهاتف *</label>
                                 <input type="tel" id="clientPhone" required placeholder="06XXXXXXXX" dir="ltr"
-                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-right text-xs">
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth text-right">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">العنوان *</label>
+                                <label class="block text-[11px] font-bold text-slate-600 mb-1">العنوان *</label>
                                 <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
-                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs"></textarea>
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></textarea>
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-2 gap-2.5">
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">الثمن (د.م)</label>
+                                    <label class="block text-[10px] font-bold text-slate-600 mb-1">الثمن (د.م)</label>
                                     <input type="number" id="orderPrice" required placeholder="130"
-                                        class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
+                                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">التوصيل (د.م)</label>
+                                    <label class="block text-[10px] font-bold text-slate-600 mb-1">التوصيل (د.م)</label>
                                     <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
-                                        class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none">
+                                        class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:outline-none">
                                 </div>
                             </div>
                             <button type="submit" id="submitBtn"
-                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95 text-xs">
+                                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3 rounded-xl shadow-md transition-smooth active:scale-95 text-xs">
                                 🚀 إرسال للفرور فوراً
                             </button>
                         </form>
                     </div>
                 </div>
 
+                <!-- قائمة متابعة الطلبات -->
                 <div class="lg:col-span-2">
-                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-100">
+                    <div class="bg-white p-5 rounded-3xl shadow-xs border border-slate-100">
                         <div class="mb-4">
-                            <h2 class="text-lg font-bold text-slate-800 mb-3">📋 متابعة الطلبات</h2>
+                            <h2 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <span class="bg-slate-100 text-slate-600 p-1.5 rounded-xl text-xs">📋</span> متابعة الطلبات
+                            </h2>
+                            <!-- أزرار الفلترة الأنيقة -->
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
-                                <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-amber-500 text-white">
+                                <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-xs transition-smooth bg-amber-500 text-white">
                                     <i class="fa-solid fa-clock-rotate-left"></i> قيد الانتظار
                                 </button>
-                                <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
                                     <i class="fa-solid fa-calendar-days"></i> مجدولة
                                 </button>
-                                <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
                                     <i class="fa-solid fa-circle-check"></i> تم الإستلام
                                 </button>
-                                <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale bg-slate-200 text-slate-700">
+                                <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
                                     <i class="fa-solid fa-circle-xmark"></i> رفض الإستلام
                                 </button>
                             </div>
                         </div>
-                        <div id="sellerOrdersList" class="space-y-4"></div>
+                        <div id="sellerOrdersList" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- قسم المخزون والأسعار -->
-        <div id="seller-tab-inventory" class="space-y-4 hidden">
-            <div class="flex items-center justify-between">
-                <h2 class="text-base font-bold text-slate-800">إدارة المخزون والأسعار</h2>
-                <button onclick="openRestockModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+        <section id="seller-tab-inventory" class="space-y-4 hidden">
+            <div class="flex items-center justify-between bg-white p-4 rounded-2xl shadow-xs border border-slate-100">
+                <h2 class="text-sm font-bold text-slate-800">☂️ إدارة المخزون والأسعار</h2>
+                <button onclick="openRestockModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 shadow-sm transition-smooth">
                     <i class="fa-solid fa-plus"></i> إضافة شحنة واردة
                 </button>
             </div>
-            <div id="inventory-list" class="space-y-2.5"></div>
-        </div>
+            <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+        </section>
 
     </main>
 
-    <!-- Modal: Edit Price -->
-    <div id="price-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
+    <!-- نافذة تعديل السعر -->
+    <div id="price-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
                 <h3 class="text-sm font-bold text-slate-800">تعديل تسعير المنتج</h3>
                 <button onclick="closePriceModal()" class="text-slate-400 text-lg">&times;</button>
@@ -181,44 +192,45 @@
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">سعر التكلفة (DH):</label>
-                    <input id="edit-cost-input" type="number" step="0.5" class="w-full h-10 px-3 border rounded-xl font-bold">
+                    <input id="edit-cost-input" type="number" step="0.5" class="w-full h-10 px-3 border rounded-xl font-bold bg-slate-50">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">سعر البيع (DH):</label>
-                    <input id="edit-price-input" type="number" step="0.5" class="w-full h-10 px-3 border rounded-xl font-bold">
+                    <input id="edit-price-input" type="number" step="0.5" class="w-full h-10 px-3 border rounded-xl font-bold bg-slate-50">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="savePriceChanges()" class="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs">حفظ</button>
+                <button onclick="savePriceChanges()" class="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-sm">حفظ</button>
                 <button onclick="closePriceModal()" class="px-4 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold text-xs">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Add Stock -->
-    <div id="stock-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl space-y-4">
+    <!-- نافذة إضافة المخزون -->
+    <div id="stock-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-bold text-slate-800">إضافة شحنة واردة</h3>
+                <h3 class="text-sm font-bold text-slate-800">إضافة شحنة واردة للمخزون</h3>
                 <button onclick="closeRestockModal()" class="text-slate-400 text-lg">&times;</button>
             </div>
             <div class="space-y-3 text-xs">
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">اختر المنتج:</label>
-                    <select id="restock-color-select" class="w-full h-10 px-3 border rounded-xl font-semibold"></select>
+                    <select id="restock-color-select" class="w-full h-10 px-3 border rounded-xl font-semibold bg-slate-50"></select>
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">الكمية الواردة:</label>
-                    <input id="restock-qty-input" type="number" min="1" value="10" class="w-full h-10 px-3 border rounded-xl font-bold">
+                    <input id="restock-qty-input" type="number" min="1" value="10" class="w-full h-10 px-3 border rounded-xl font-bold bg-slate-50">
                 </div>
             </div>
             <div class="flex gap-2 pt-2">
-                <button onclick="handleRestockSubmit()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs">إضافة</button>
+                <button onclick="handleRestockSubmit()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl font-bold text-xs shadow-sm">إضافة الكمية</button>
                 <button onclick="closeRestockModal()" class="px-4 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold text-xs">إلغاء</button>
             </div>
         </div>
     </div>
 
+    <!-- السكريبت والمنطق البرمجي -->
     <script>
         const UPDATED_COLORS = [
             { id: 'black', name: 'مظلة باللون الأسود', stock: 117, cost: 0, price: 130, hex: '#1e293b' },
@@ -382,28 +394,28 @@
         function switchSellerTab(tab) {
             ['delivery', 'inventory'].forEach(t => {
                 document.getElementById(`seller-tab-${t}`).classList.add('hidden');
-                document.getElementById(`stab-${t}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-700 transition';
+                document.getElementById(`stab-${t}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200 transition-smooth';
             });
             document.getElementById(`seller-tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`stab-${tab}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition';
+            document.getElementById(`stab-${tab}`).className = 'px-4 py-2 rounded-xl font-bold text-xs bg-indigo-600 text-white transition-smooth shadow-sm';
         }
 
         function setFilter(f) {
             currentFilter = f;
             const buttons = {
-                'pending': { id: 'f-pending', activeClass: 'bg-amber-500 text-white' },
-                'scheduled': { id: 'f-scheduled', activeClass: 'bg-sky-600 text-white' },
-                'delivered': { id: 'f-delivered', activeClass: 'bg-emerald-600 text-white' },
-                'refused': { id: 'f-refused', activeClass: 'bg-rose-600 text-white' }
+                'pending': { id: 'f-pending', activeClass: 'bg-amber-500 text-white shadow-sm' },
+                'scheduled': { id: 'f-scheduled', activeClass: 'bg-sky-600 text-white shadow-sm' },
+                'delivered': { id: 'f-delivered', activeClass: 'bg-emerald-600 text-white shadow-sm' },
+                'refused': { id: 'f-refused', activeClass: 'bg-rose-600 text-white shadow-sm' }
             };
 
             Object.keys(buttons).forEach(k => {
                 const btn = document.getElementById(buttons[k].id);
                 if (btn) {
                     if (k === f) {
-                        btn.className = `flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-md transition active-scale font-bold text-xs ${buttons[k].activeClass}`;
+                        btn.className = `flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl transition-smooth font-bold text-xs ${buttons[k].activeClass}`;
                     } else {
-                        btn.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl shadow-sm transition active-scale font-bold text-xs bg-slate-200 text-slate-700 hover:bg-slate-300';
+                        btn.className = 'flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl transition-smooth font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200';
                     }
                 }
             });
@@ -482,7 +494,7 @@
             const filtered = orders.filter(o => o.status === currentFilter);
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-400">لا توجد طلبات في هذا القسم حالياً</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-slate-400 text-xs font-semibold">لا توجد طلبات في هذا القسم حالياً</div>`;
                 return;
             }
 
@@ -491,7 +503,7 @@
                 if (order.status === 'delivered' && order.deliveredAt) {
                     const d = new Date(order.deliveredAt);
                     timeStr = `
-                        <div class="mt-2 pt-2 border-t border-emerald-100 text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
+                        <div class="mt-2.5 pt-2.5 border-t border-emerald-100 text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span>تاريخ ووقت التسليم: ${d.toLocaleDateString('ar-MA')} على الساعة ${d.toLocaleTimeString('ar-MA', {hour: '2-digit', minute:'2-digit'})}</span>
                         </div>
@@ -499,28 +511,30 @@
                 }
 
                 return `
-                <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/60 shadow-sm">
+                <div class="border border-slate-100 rounded-2xl p-4 bg-white shadow-xs transition-smooth hover:shadow-md">
                     <div class="flex justify-between items-start gap-2 mb-2">
                         <div>
-                            <span class="text-xs bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded">${order.productName || 'مظلة'}</span>
-                            <p class="font-bold text-slate-900 text-sm mt-1">📍 ${order.address}</p>
+                            <span class="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-xl">${order.productName || 'مظلة'}</span>
+                            <p class="font-bold text-slate-800 text-xs mt-2 flex items-center gap-1.5">
+                                <span class="text-rose-500">📍</span> ${order.address}
+                            </p>
                         </div>
-                        <button onclick="deleteOrder('${order.id}')" class="text-slate-400 hover:text-rose-600 text-sm">🗑️</button>
+                        <button onclick="deleteOrder('${order.id}')" class="text-slate-300 hover:text-rose-600 transition-smooth p-1 text-sm" title="حذف الطلب">🗑️</button>
                     </div>
-                    <div class="flex justify-between items-center mt-2 pt-2 border-t text-xs">
-                        <a href="tel:${order.phone}" class="font-bold text-indigo-600" dir="ltr">📞 ${order.phone}</a>
-                        <span class="font-extrabold text-slate-800">${order.price} د.م</span>
+                    <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-100 text-xs">
+                        <a href="tel:${order.phone}" class="font-bold text-indigo-600 hover:underline bg-indigo-50 px-2.5 py-1 rounded-lg" dir="ltr">📞 ${order.phone}</a>
+                        <span class="font-extrabold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">${order.price} د.م</span>
                     </div>
                     ${timeStr}
                     ${order.status === 'refused' && order.refusalReason ? `
-                        <div class="mt-3 bg-rose-50 border border-rose-200 rounded-lg p-2.5 text-xs text-rose-800">
-                            <strong>سبب الرفض من اللفرور:</strong> ${order.refusalReason}
+                        <div class="mt-3 bg-rose-50 border border-rose-100 rounded-xl p-2.5 text-xs text-rose-800">
+                            <strong>سبب الرفض:</strong> ${order.refusalReason}
                         </div>
                     ` : ''}
                     ${order.status === 'scheduled' ? `
-                        <div class="mt-3 bg-sky-50 border border-sky-200 rounded-lg p-2.5 text-xs text-sky-900 flex justify-between items-center">
+                        <div class="mt-3 bg-sky-50 border border-sky-100 rounded-xl p-2.5 text-xs text-sky-900 flex justify-between items-center">
                             <span>📅 موعد التسليم: ${order.scheduledDate} (${order.scheduledTime})</span>
-                            <button onclick="returnToCourier('${order.id}')" class="bg-sky-600 text-white px-2.5 py-1 rounded-lg font-bold">إعادة للفرور</button>
+                            <button onclick="returnToCourier('${order.id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold transition-smooth">إعادة للفرور</button>
                         </div>
                     ` : ''}
                 </div>`;
@@ -531,17 +545,17 @@
             const list = document.getElementById('inventory-list');
             if (!list) return;
             list.innerHTML = colors.map(item => `
-                <div class="bg-white border rounded-xl p-3 flex items-center justify-between shadow-sm text-xs">
+                <div class="bg-white border border-slate-100 rounded-2xl p-4 flex items-center justify-between shadow-xs transition-smooth hover:shadow-md text-xs">
                     <div class="flex items-center gap-3">
-                        <span class="w-7 h-7 rounded-lg" style="background-color: ${item.hex}; ${item.border ? 'border:1px solid #ccc' : ''}"></span>
+                        <span class="w-8 h-8 rounded-xl shadow-inner flex-shrink-0" style="background-color: ${item.hex}; ${item.border ? 'border:1px solid #cbd5e1' : ''}"></span>
                         <div>
-                            <div class="font-bold">${item.name}</div>
-                            <div class="text-[10px] text-slate-500">التكلفة: ${item.cost} | البيع: ${item.price} DH</div>
+                            <div class="font-bold text-slate-800">${item.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">التكلفة: ${item.cost} | البيع: ${item.price} DH</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="font-extrabold text-indigo-700">${item.stock} قطعة</div>
-                        <button onclick="openPriceModal('${item.id}')" class="bg-slate-100 px-2.5 py-1.5 rounded-lg font-bold">تعديل</button>
+                        <div class="font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl">${item.stock} قطعة</div>
+                        <button onclick="openPriceModal('${item.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl font-bold transition-smooth">تعديل</button>
                     </div>
                 </div>
             `).join('');
@@ -560,6 +574,23 @@
             item.cost = parseFloat(document.getElementById('edit-cost-input').value) || 0;
             item.price = parseFloat(document.getElementById('edit-price-input').value) || 0;
             closePriceModal();
+            saveAll();
+            renderInventoryList();
+            populateProductDropdown();
+        }
+
+        function openRestockModal() {
+            const select = document.getElementById('restock-color-select');
+            select.innerHTML = colors.map(c => `<option value="${c.id}">${c.name} (المتوفر: ${c.stock})</option>`).join('');
+            document.getElementById('stock-modal').classList.remove('hidden');
+        }
+        function closeRestockModal() { document.getElementById('stock-modal').classList.add('hidden'); }
+        function handleRestockSubmit() {
+            const id = document.getElementById('restock-color-select').value;
+            const qty = parseInt(document.getElementById('restock-qty-input').value) || 0;
+            const item = colors.find(c => c.id === id);
+            if(item) item.stock += qty;
+            closeRestockModal();
             saveAll();
             renderInventoryList();
             populateProductDropdown();
