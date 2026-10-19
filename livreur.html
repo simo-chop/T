@@ -267,7 +267,7 @@
                     if (idx !== -1) {
                         orders[idx].status = 'refused';
                         orders[idx].refusalReason = reason;
-                        orders[idx].deliveredAt = Date.now(); // تسجيل وقت الرفض
+                        orders[idx].deliveredAt = Date.now();
                         orders[idx].courierName = courierUsername;
                     }
 
@@ -370,6 +370,9 @@
             `;
             }).join('');
         }
+
+        loadDataFromSupabase();
+        changeCourierLanguage(currentCourierLang);
     </script>
 </body>
 </html>
