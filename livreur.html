@@ -253,7 +253,12 @@
                 clean = clean.substring(1);
             }
             const courierName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            const msg = `السلام عليكم \nمعكم ${courierName} \nكنتواصلو معكم بخصوص طلبكم ${productName} \nالمبلغ المستحق ${price} د.م \nالمرجو تأكيد عنوانكم ${address}`;
+            const courierName = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
+            const msg = `👋 السلام عليكم 👋\n 
+ 🛵 معكم : *${courierName}* اللفرور \n
+📦 كنتواصل معكم بخصوص الطلب ديالكم: *${productName}* \n
+💵 المبلغ المستحق : *${price}* درهم \n
+📌 المرجو تأكيد عنوانكم : *${address}*`;
             return `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`;
         }
 
