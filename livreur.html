@@ -29,14 +29,13 @@
                 </div>
             </div>
 
-            <!-- زر تغيير اللغة للفرور -->
             <div class="flex items-center gap-2">
                 <div class="bg-slate-900 border border-slate-700 rounded-xl p-1 flex items-center gap-1 shadow-inner">
                     <button onclick="changeCourierLanguage('ar')" id="c-lang-ar" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white">AR</button>
                     <button onclick="changeCourierLanguage('fr')" id="c-lang-fr" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white">FR</button>
                     <button onclick="changeCourierLanguage('en')" id="c-lang-en" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white">EN</button>
                 </div>
-                <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-full shadow-xs whitespace-nowrap" id="pendingBadge">0 <span data-i18n="pendingBadgeText">قيد الانتظار</span></span>
+                <span class="bg-amber-400 text-slate-950 font-extrabold text-xs px-3.5 py-1.5 rounded-full shadow-xs whitespace-nowrap" id="pendingBadge">0 <span data-i18n="pendingBadgeText">قيد الانتظار</span></span>
             </div>
         </div>
     </header>
@@ -48,6 +47,7 @@
     <script>
         const courierTranslations = {
             ar: {
+                titlePrefix: "اللفرور",
                 connected: "متصل بالسيرفر لحظياً",
                 pendingBadgeText: "قيد الانتظار",
                 noOrders: "لا توجد طلبات قيد الانتظار حالياً",
@@ -59,9 +59,11 @@
                 confirmRefusal: "تأكيد الرفض",
                 confirmSchedule: "تأكيد الجدولة",
                 cancelBtn: "إلغاء",
-                alertReason: "أدخل السبب"
+                alertReason: "أدخل السبب",
+                currency: "د.م"
             },
             fr: {
+                titlePrefix: "Livreur",
                 connected: "Connecté en temps réel",
                 pendingBadgeText: "En attente",
                 noOrders: "Aucune commande en attente",
@@ -73,9 +75,11 @@
                 confirmRefusal: "Confirmer le refus",
                 confirmSchedule: "Confirmer la date",
                 cancelBtn: "Annuler",
-                alertReason: "Veuillez entrer le motif"
+                alertReason: "Veuillez entrer le motif",
+                currency: "DH"
             },
             en: {
+                titlePrefix: "Courier",
                 connected: "Connected in real-time",
                 pendingBadgeText: "Pending",
                 noOrders: "No pending orders currently",
@@ -87,7 +91,8 @@
                 confirmRefusal: "Confirm Refusal",
                 confirmSchedule: "Confirm Schedule",
                 cancelBtn: "Cancel",
-                alertReason: "Please enter a reason"
+                alertReason: "Please enter a reason",
+                currency: "DH"
             }
         };
 
@@ -119,6 +124,7 @@
                 }
             });
 
+            updateCourierHeaderName();
             renderCourierOrders();
         }
 
@@ -182,7 +188,8 @@
 
         function updateCourierHeaderName() {
             const name = localStorage.getItem(COURIER_NAME_KEY) || 'اللفرور';
-            document.getElementById('courierTitleName').textContent = `اللفرور: ${name}`;
+            const prefix = courierTranslations[currentCourierLang].titlePrefix;
+            document.getElementById('courierTitleName').textContent = `${prefix}: ${name}`;
         }
 
         function changeCourierNamePrompt() {
@@ -281,8 +288,8 @@
             container.innerHTML = pendingOrders.map(order => `
                 <div class="bg-slate-800/90 border border-slate-700/80 rounded-3xl p-5 shadow-xl text-white backdrop-blur-xs">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-xl">📦 ${order.productName || 'مظلة'}</span>
-                        <span class="font-extrabold text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-xl">${order.price} د.م</span>
+                        <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-3 py-1 rounded-xl">📦 ${order.productName}</span>
+                        <span class="font-extrabold text-emerald-400 text-sm bg-emerald-500/10 px-3 py-1 rounded-xl">${order.price} ${courierTranslations[currentCourierLang].currency}</span>
                     </div>
                     <p class="text-sm mb-4 font-semibold text-slate-200">📍 ${order.address}</p>
                     <div class="grid grid-cols-2 gap-2.5 mb-3">

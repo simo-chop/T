@@ -77,12 +77,12 @@
                 </div>
                 <div class="bg-white p-4 rounded-2xl shadow-xs border border-slate-200/60 border-r-4 border-r-indigo-600">
                     <p class="text-[11px] text-slate-500 font-bold" data-i18n="dailyRevenue">المحصل اليومي</p>
-                    <p class="text-xl font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> <span class="text-xs">د.م</span></p>
+                    <p class="text-xl font-extrabold text-indigo-700 mt-1"><span id="statRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
                 </div>
                 <div class="bg-emerald-50/60 p-4 rounded-2xl shadow-xs border border-emerald-100 border-r-4 border-r-teal-600">
                     <p class="text-[11px] text-teal-800 font-bold" data-i18n="netTotalStat">المجموع الصافي</p>
-                    <p class="text-xl font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> <span class="text-xs">د.م</span></p>
-                    <p class="text-[10px] text-teal-600 font-semibold mt-0.5" data-i18n="deliveryLabel">التوصيل:</p>
+                    <p class="text-xl font-extrabold text-teal-700 mt-1"><span id="statNetRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
+                    <p class="text-[10px] text-teal-600 font-semibold mt-0.5"><span data-i18n="deliveryLabel">التوصيل:</span> -<span id="statDeliveryFees">0</span> <span class="currencyUnit">د.م</span></p>
                 </div>
             </div>
 
@@ -90,14 +90,14 @@
                 <div class="bg-white/5 p-5 rounded-2xl border border-white/10 backdrop-blur-xs flex flex-col justify-between">
                     <div>
                         <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" data-i18n="netProfitTotal">المجموع الصافي الإجمالي</span>
-                        <div id="box-net-total" class="text-3xl font-extrabold text-emerald-400 mt-2">0.00 د.م</div>
+                        <div id="box-net-total" class="text-3xl font-extrabold text-emerald-400 mt-2">0.00 <span class="currencyUnit">د.م</span></div>
                     </div>
                     <span class="text-[11px] text-slate-400 mt-3" data-i18n="netProfitSub">مجموع الطلبات المسلمة ناقص مصاريف التوصيل</span>
                 </div>
                 <div class="bg-white/5 p-5 rounded-2xl border border-white/10 backdrop-blur-xs flex flex-col justify-between">
                     <div>
                         <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" data-i18n="courierDebtTitle">المال المتبقي عند اللفرور</span>
-                        <div id="box-courier-debt" class="text-3xl font-extrabold text-rose-400 mt-2">0.00 د.م</div>
+                        <div id="box-courier-debt" class="text-3xl font-extrabold text-rose-400 mt-2">0.00 <span class="currencyUnit">د.م</span></div>
                     </div>
                     <button onclick="settleCourierDebt()" class="mt-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-smooth active:scale-95 text-center shadow-md flex items-center justify-center gap-2">
                         <i class="fa-solid fa-wallet"></i> <span data-i18n="settleBtn">استلمت المال (تصفير الحساب)</span>
@@ -124,7 +124,7 @@
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="address">العنوان *</label>
                                 <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></textarea>
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" data-i18n-placeholder="addressPlaceholder"></textarea>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -296,8 +296,9 @@
                 selectProduct: "اختر المنتج *",
                 phoneNumber: "رقم الهاتف *",
                 address: "العنوان *",
-                price: "الثمن (د.م)",
-                deliveryFee: "التوصيل (د.م)",
+                addressPlaceholder: "الحي، الشارع، رقم المنزل...",
+                price: "الثمن",
+                deliveryFee: "التوصيل",
                 sendToCourier: "إرسال للفرور فوراً",
                 trackOrders: "متابعة الطلبات",
                 inventoryTitle: "إدارة المخزون والمنتجات",
@@ -305,7 +306,7 @@
                 addStockBtn: "إضافة شحنة واردة",
                 editProductTitle: "تعديل تفاصيل المنتج",
                 productName: "اسم المنتج:",
-                sellingPrice: "سعر البيع (DH):",
+                sellingPrice: "سعر البيع",
                 imageUrl: "رابط صورة المنتج (URL):",
                 saveBtn: "حفظ التعديلات",
                 cancelBtn: "إلغاء",
@@ -318,6 +319,7 @@
                 deleteConfirm: "حذف هذا الطلب نهائياً؟",
                 noOrders: "لا توجد طلبات في هذا القسم حالياً",
                 units: "قطعة",
+                currency: "د.م",
                 deliveryLabel: "التوصيل:",
                 refusalReasonLabel: "سبب الرفض:",
                 scheduledDateLabel: "موعد التسليم:",
@@ -344,8 +346,9 @@
                 selectProduct: "Sélectionner le produit *",
                 phoneNumber: "Téléphone *",
                 address: "Adresse *",
-                price: "Prix (DH)",
-                deliveryFee: "Livraison (DH)",
+                addressPlaceholder: "Quartier, rue, numéro de maison...",
+                price: "Prix",
+                deliveryFee: "Livraison",
                 sendToCourier: "Envoyer au livreur",
                 trackOrders: "Suivi des commandes",
                 inventoryTitle: "Gestion du Stock & Produits",
@@ -353,7 +356,7 @@
                 addStockBtn: "Ajouter du Stock",
                 editProductTitle: "Modifier le produit",
                 productName: "Nom du produit:",
-                sellingPrice: "Prix de vente (DH):",
+                sellingPrice: "Prix de vente",
                 imageUrl: "Lien de l'image (URL):",
                 saveBtn: "Enregistrer",
                 cancelBtn: "Annuler",
@@ -366,6 +369,7 @@
                 deleteConfirm: "Supprimer définitivement cette commande ?",
                 noOrders: "Aucune commande dans cette section",
                 units: "unités",
+                currency: "DH",
                 deliveryLabel: "Livraison:",
                 refusalReasonLabel: "Motif du refus:",
                 scheduledDateLabel: "Date de livraison:",
@@ -392,8 +396,9 @@
                 selectProduct: "Select Product *",
                 phoneNumber: "Phone Number *",
                 address: "Address *",
-                price: "Price (DH)",
-                deliveryFee: "Delivery (DH)",
+                addressPlaceholder: "Neighborhood, street, house number...",
+                price: "Price",
+                deliveryFee: "Delivery",
                 sendToCourier: "Send to Courier",
                 trackOrders: "Track Orders",
                 inventoryTitle: "Inventory & Products Management",
@@ -401,7 +406,7 @@
                 addStockBtn: "Add Incoming Stock",
                 editProductTitle: "Edit Product Details",
                 productName: "Product Name:",
-                sellingPrice: "Selling Price (DH):",
+                sellingPrice: "Selling Price",
                 imageUrl: "Product Image URL:",
                 saveBtn: "Save Changes",
                 cancelBtn: "Cancel",
@@ -414,6 +419,7 @@
                 deleteConfirm: "Permanently delete this order?",
                 noOrders: "No orders in this section currently",
                 units: "units",
+                currency: "DH",
                 deliveryLabel: "Delivery:",
                 refusalReasonLabel: "Refusal reason:",
                 scheduledDateLabel: "Delivery date:",
@@ -447,6 +453,17 @@
                 if (translations[lang][key]) {
                     el.textContent = translations[lang][key];
                 }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('.currencyUnit').forEach(el => {
+                el.textContent = translations[lang].currency;
             });
 
             renderSellerOrders();
@@ -501,6 +518,7 @@
                   orders = payload.new.payload.orders || [];
                   colors = payload.new.payload.colors || DEFAULT_COLORS;
                   courierDebt = payload.new.payload.courierDebt || 0;
+                  populateProductDropdown();
                   renderSellerOrders();
                   renderInventoryList();
                   updateSellerStats();
@@ -519,7 +537,7 @@
             colors.forEach(c => {
                 const opt = document.createElement('option');
                 opt.value = c.id;
-                opt.textContent = `${c.name} (متوفر: ${c.stock}) - ${c.price} DH`;
+                opt.textContent = `${c.name} (متوفر: ${c.stock}) - ${c.price} ${translations[currentLang].currency}`;
                 select.appendChild(opt);
             });
 
@@ -666,8 +684,8 @@
             document.getElementById('statNetRevenue').textContent = (dailyRevenue - dailyDeliveryFees).toLocaleString();
             document.getElementById('statDeliveryFees').textContent = dailyDeliveryFees.toLocaleString();
 
-            document.getElementById('box-net-total').textContent = `${totalNetProfit.toFixed(2)} د.م`;
-            document.getElementById('box-courier-debt').textContent = `${courierRemainingMoney.toFixed(2)} د.م`;
+            document.querySelectorAll('.boxNetTotalText').forEach(el => el.textContent = `${totalNetProfit.toFixed(2)} ${translations[currentLang].currency}`);
+            document.querySelectorAll('.boxCourierDebtText').forEach(el => el.textContent = `${courierRemainingMoney.toFixed(2)} ${translations[currentLang].currency}`);
         }
 
         function renderSellerOrders() {
@@ -696,7 +714,7 @@
                 <div class="border border-slate-200/70 rounded-2xl p-4 bg-white shadow-xs transition-smooth hover:shadow-md">
                     <div class="flex justify-between items-start gap-2 mb-2">
                         <div>
-                            <span class="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-xl">${order.productName || 'مظلة'}</span>
+                            <span class="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
                             <p class="font-bold text-slate-800 text-xs mt-2 flex items-center gap-1.5">
                                 <span class="text-rose-500">📍</span> ${order.address}
                             </p>
@@ -705,7 +723,7 @@
                     </div>
                     <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-100 text-xs">
                         <a href="tel:${order.phone}" class="font-bold text-indigo-600 hover:underline bg-indigo-50 px-2.5 py-1 rounded-lg" dir="ltr">📞 ${order.phone}</a>
-                        <span class="font-extrabold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">${order.price} د.م</span>
+                        <span class="font-extrabold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">${order.price} ${translations[currentLang].currency}</span>
                     </div>
                     ${timeStr}
                     ${order.status === 'refused' && order.refusalReason ? `
@@ -732,7 +750,7 @@
                         <img src="${item.img || 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100'}" class="w-12 h-12 rounded-xl object-cover shadow-xs border border-slate-200 flex-shrink-0" alt="صورة المنتج">
                         <div>
                             <div class="font-extrabold text-slate-900 text-sm">${item.name}</div>
-                            <div class="text-[11px] text-slate-500 font-semibold mt-0.5">${item.price} DH</div>
+                            <div class="text-[11px] text-slate-500 font-semibold mt-0.5">${item.price} ${translations[currentLang].currency}</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2.5">
