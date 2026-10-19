@@ -188,7 +188,6 @@
         }
 
         async function saveAllToSupabase() {
-            // جلب البيانات الحالية وتحديث الطلبات لضمان عدم ضياع المخزون عند تسليم الطلب
             const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
             let colors = data && data.payload ? data.payload.colors : [];
             let courierDebt = data && data.payload ? (data.payload.courierDebt || 0) : 0;
@@ -197,7 +196,7 @@
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        sb.channel('public:app_state_courier_v8')
+        sb.channel('public:app_state_courier_v9')
           .on('postgres_changes', { event: '*', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
@@ -220,12 +219,13 @@
             const idx = orders.findIndex(o => o.id === id);
             if (idx === -1) return;
 
+            const courierUsername = localStorage.getItem('COURIER_USERNAME') || 'اللفرور';
             const order = orders[idx];
             order.status = 'delivered';
             order.deliveredAt = Date.now();
+            order.courierName = courierUsername; // تسجيل اسم اللفرور
             const orderQty = order.quantity || 1;
 
-            // تحديث المخزون خصماً بالكمية المطلوبة
             try {
                 const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
                 if (data && data.payload) {
@@ -243,7 +243,7 @@
             renderCourierOrders();
 
             const sellerWhatsAppNumber = '212660005716';
-            const waMsg = `✅ تم استلام الطلب بنجاح \n📦 المنتج: ${order.productName} (العدد: ${orderQty}) \n📍 العنوان: ${order.address} \n💰 الثمن: ${order.price} د.م`;
+            const waMsg = `✅ تم استلام الطلب بنجاح بواسطة (${courierUsername}) \n📦 المنتج: ${order.productName} (العدد: ${orderQty}) \n📍 العنوان: ${order.address} \n💰 الثمن: ${order.price} د.م`;
             window.open(`https://wa.me/${sellerWhatsAppNumber}?text=${encodeURIComponent(waMsg)}`, '_blank');
         }
 
@@ -283,9 +283,13 @@
         async function confirmRefusal(id) {
             const reason = document.getElementById('reason-input-' + id).value.trim();
             if(!reason) return alert(courierTranslations[currentCourierLang].alertReason);
+            
+            const courierUsername = localStorage.getItem('COURIER_USERNAME') || 'اللفرور';
             const idx = orders.findIndex(o => o.id === id);
             orders[idx].status = 'refused';
             orders[idx].refusalReason = reason;
+            orders[idx].courierName = courierUsername; // تسجيل اسم اللفرور
+            
             activeActionId = null;
             await saveAllToSupabase();
             renderCourierOrders();
@@ -294,10 +298,14 @@
         async function confirmSchedule(id) {
             const d = document.getElementById('sched-date-' + id).value;
             const t = document.getElementById('sched-time-' + id).value;
+            
+            const courierUsername = localStorage.getItem('COURIER_USERNAME') || 'اللفرور';
             const idx = orders.findIndex(o => o.id === id);
             orders[idx].status = 'scheduled';
             orders[idx].scheduledDate = d;
             orders[idx].scheduledTime = t;
+            orders[idx].courierName = courierUsername; // تسجيل اسم اللفرور
+
             activeActionId = null;
             await saveAllToSupabase();
             renderCourierOrders();

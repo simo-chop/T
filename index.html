@@ -27,7 +27,7 @@
             
             <div class="flex items-center gap-1 bg-slate-800/80 border border-slate-700/80 rounded-xl p-0.5 shadow-inner">
                 <button onclick="changeLanguage('ar')" id="lang-ar" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">العربية</button>
-                <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
+                <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">FR</button>
                 <button onclick="changeLanguage('en')" id="lang-en" class="px-2.5 py-0.5 text-[10px] font-bold rounded-lg transition-smooth">EN</button>
             </div>
 
@@ -129,7 +129,6 @@
                                 <select id="orderProductSelect" class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></select>
                             </div>
                             
-                            <!-- خانة العدد (الكمية) الجديدة -->
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="quantityLabel">العدد (الكمية) *</label>
@@ -213,7 +212,7 @@
         </section>
     </main>
 
-    <!-- نافذة تعديل طلب موجود -->
+    <!-- نافذة تعديل طلب -->
     <div id="edit-order-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -656,6 +655,7 @@
                     refusalReason: '',
                     scheduledDate: '',
                     scheduledTime: '',
+                    courierName: '',
                     createdAt: Date.now()
                 };
 
@@ -748,6 +748,7 @@
             const idx = orders.findIndex(o => o.id === id);
             if (idx !== -1) {
                 orders[idx].status = 'pending';
+                orders[idx].courierName = ''; // مسح اسم اللفرور عند إعادته للانتظار
                 saveAllToSupabase();
                 renderSellerOrders();
                 updateSellerStats();
@@ -824,7 +825,8 @@
                     `;
                 }
 
-                const qtyBadge = order.quantity ? `<span class="bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-lg text-[10px] ml-1">العدد: ${order.quantity}</span>` : '';
+                const qtyVal = order.quantity || 1;
+                const courierBadge = order.courierName ? `<span class="bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-lg text-[10px] ml-1">🛵 اللفرور: ${order.courierName}</span>` : '';
 
                 return `
                 <div class="border border-slate-800 rounded-2xl p-4 bg-slate-900/80 shadow-md transition-smooth hover:border-slate-700">
@@ -832,7 +834,8 @@
                         <div>
                             <div class="flex items-center gap-1.5 flex-wrap">
                                 <span class="text-[11px] bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
-                                ${qtyBadge}
+                                <span class="text-xs bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded-lg text-[10px]">العدد: ${qtyVal}</span>
+                                ${courierBadge}
                             </div>
                             <p class="font-bold text-slate-200 text-xs mt-2 flex items-center gap-1.5">
                                 <span class="text-rose-400">📍</span> ${order.address}
