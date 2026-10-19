@@ -20,23 +20,23 @@
                 🛵
             </div>
             <h1 class="text-lg font-black text-white">تسجيل دخول اللفرور</h1>
-            <p class="text-xs text-slate-400">أدخل بيانات الاعتماد للوصول إلى بوابة التوصيل</p>
+            <p class="text-xs text-slate-400">أدخل اسمك وكلمة المرور للبدء</p>
         </div>
 
         <form id="courierLoginForm" class="space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم المستخدم (Username)</label>
-                <input type="text" id="courierUser" required placeholder="livreur"
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم اللفرور (Username) *</label>
+                <input type="text" id="courierUser" required placeholder="مثال: Youssef"
                     class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-smooth" dir="ltr">
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1.5">كلمة المرور (Password)</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">كلمة المرور (Password) *</label>
                 <input type="password" id="courierPass" required placeholder="••••••••"
                     class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-smooth" dir="ltr">
             </div>
             
             <div id="courierErrorMsg" class="text-rose-400 text-xs font-bold text-center hidden">
-                اسم المستخدم أو كلمة المرور غير صحيحة!
+                المرجو التأكد من إدخال اسم المستخدم وكلمة المرور الصحيحة!
             </div>
 
             <button type="submit"
@@ -47,17 +47,18 @@
     </div>
 
     <script>
-        // بيانات الدخول الخاصة باللفرور (يمكنك تغييرها كما تشاء)
-        const COURIER_USER = "livreur";
-        const COURIER_PASS = "5678";
+        // كلمة المرور الموحدة الخاصة باللفرور (يمكنك تغييرها هنا متى شئت)
+        const FIXED_COURIER_PASS = "1111";
 
         document.getElementById('courierLoginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const u = document.getElementById('courierUser').value.trim();
-            const p = document.getElementById('courierPass').value.trim();
+            const usernameInput = document.getElementById('courierUser').value.trim();
+            const passwordInput = document.getElementById('courierPass').value.trim();
 
-            if (u === COURIER_USER && p === COURIER_PASS) {
+            if (usernameInput !== "" && passwordInput === FIXED_COURIER_PASS) {
+                // حفظ حالة الدخول واسم المستخدم لكي يعتمده النظام تلقائياً
                 localStorage.setItem('COURIER_LOGGED_IN', 'true');
+                localStorage.setItem('COURIER_USERNAME', usernameInput);
                 window.location.href = 'livreur.html';
             } else {
                 document.getElementById('courierErrorMsg').classList.remove('hidden');
