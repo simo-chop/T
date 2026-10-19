@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simo Chop - تسجيل الدخول</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-height: 100vh; }
+        .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="glass-panel w-full max-w-md rounded-3xl p-8 space-y-6">
+        <div class="text-center space-y-2">
+            <div class="bg-indigo-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg text-xl font-black mx-auto">
+                SC
+            </div>
+            <h1 class="text-lg font-black text-white">تسجيل دخول البائع</h1>
+            <p class="text-xs text-slate-400">أدخل بيانات الاعتماد للوصول إلى لوحة التحكم</p>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">اسم المستخدم (Username)</label>
+                <input type="text" id="username" required placeholder="simo"
+                    class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" dir="ltr">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">كلمة المرور (Password)</label>
+                <input type="password" id="password" required placeholder="••••••••"
+                    class="w-full px-4 py-3.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" dir="ltr">
+            </div>
+            
+            <div id="errorMsg" class="text-rose-400 text-xs font-bold text-center hidden">
+                اسم المستخدم أو كلمة المرور غير صحيحة!
+            </div>
+
+            <button type="submit"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-smooth active:scale-95 text-xs flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-to-bracket"></i> <span>دخول للوحة التحكم</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // يمكنك تغيير اسم المستخدم وكلمة المرور من هنا كما تشاء
+        const ADMIN_USER = "simo";
+        const ADMIN_PASS = "121206az";
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                localStorage.setItem('SIMO_LOGGED_IN', 'true');
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('errorMsg').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
