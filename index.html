@@ -9,49 +9,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .glass-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-height: 100vh; }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); }
+        .glass-header { background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .transition-smooth { transition: all 0.25s ease-in-out; }
     </style>
 </head>
-<body class="min-h-screen pb-24 text-slate-900">
+<body class="min-h-screen pb-24 text-slate-100">
 
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
-        <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
+    <header class="glass-header sticky top-0 z-50 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex justify-between items-center gap-4">
+            
+            <!-- عنوان لوحة التحكم وشعار المتجر في الشمال (اليسار) -->
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-base font-black">
+                <div class="bg-indigo-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-base font-black flex-shrink-0">
                     SC
                 </div>
-                <div>
-                    <h1 class="text-sm font-black tracking-wide text-slate-900" data-i18n="storeTitle">SIMO CHOP - لوحة البائع</h1>
-                    <p class="text-[11px] text-emerald-600 font-bold flex items-center gap-1.5 mt-0.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span data-i18n="connected">متصل بالسيرفر مع اللفرور</span>
+                <div class="text-right">
+                    <h1 class="text-sm font-black tracking-wide text-white" data-i18n="storeTitle">لوحة تحكم البائع</h1>
+                    <p class="text-[11px] text-emerald-400 font-bold flex items-center justify-end gap-1.5 mt-0.5">
+                        <span data-i18n="connected">متصل بالسيرفر مع اللفرور</span> <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2.5 flex-wrap">
-                <div class="bg-slate-100 border border-slate-200 rounded-xl p-1 flex items-center gap-1">
-                    <button onclick="changeLanguage('ar')" id="lang-ar" class="px-3 py-1 text-xs font-bold rounded-lg transition-smooth">العربية</button>
-                    <button onclick="changeLanguage('fr')" id="lang-fr" class="px-3 py-1 text-xs font-bold rounded-lg transition-smooth">Français</button>
-                    <button onclick="changeLanguage('en')" id="lang-en" class="px-3 py-1 text-xs font-bold rounded-lg transition-smooth">English</button>
-                </div>
-                <button onclick="openCourierPage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold px-4 py-2.5 rounded-xl shadow-xs transition-smooth flex items-center gap-2">
-                    <i class="fa-solid fa-motorcycle"></i> <span data-i18n="courierPage">صفحة اللفرور</span>
-                </button>
-                <button onclick="copyCourierLink()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs transition-smooth flex items-center gap-2">
-                    <i class="fa-solid fa-link"></i> <span data-i18n="copyLink">نسخ الرابط</span>
-                </button>
+            <!-- أزرار اللغات مصغرة وفي اليمين -->
+            <div class="flex items-center gap-1 bg-slate-800/80 border border-slate-700/80 rounded-xl p-0.5 shadow-inner">
+                <button onclick="changeLanguage('ar')" id="lang-ar" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">العربية</button>
+                <button onclick="changeLanguage('fr')" id="lang-fr" class="px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">FR</button>
+                <button onclick="changeLanguage('en')" id="lang-en" class="px-2.5 py-0.5 text-[11px] font-bold rounded-lg transition-smooth">EN</button>
             </div>
+        </div>
+
+        <!-- شريط الأزرار التحتية (نسخ الرابط وصفحة اللفرور) -->
+        <div class="max-w-6xl mx-auto px-4 pb-3.5 flex justify-between items-center gap-3 border-t border-slate-800/60 pt-3">
+            <button onclick="copyCourierLink()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl border border-slate-700 shadow-xs transition-smooth flex items-center gap-2">
+                <i class="fa-solid fa-link"></i> <span data-i18n="copyLink">نسخ الرابط</span>
+            </button>
+            <button onclick="openCourierPage()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-xl shadow-xs transition-smooth flex items-center gap-2">
+                <i class="fa-solid fa-motorcycle"></i> <span data-i18n="courierPage">صفحة اللفرور</span>
+            </button>
         </div>
     </header>
 
     <div class="max-w-6xl mx-auto px-4 mt-6">
-        <div class="bg-slate-200/70 p-1.5 rounded-2xl flex gap-2 max-w-md">
+        <div class="bg-slate-800/60 border border-slate-700/60 p-1.5 rounded-2xl flex gap-2 max-w-md shadow-inner">
             <button onclick="switchSellerTab('delivery')" id="stab-delivery" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-indigo-600 text-white transition-smooth shadow-sm flex items-center justify-center gap-2">
                 <i class="fa-solid fa-truck-fast"></i> <span data-i18n="deliveryManagement">إدارة التوصيل</span>
             </button>
-            <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-transparent text-slate-600 hover:bg-slate-200 transition-smooth flex items-center justify-center gap-2">
+            <button onclick="switchSellerTab('inventory')" id="stab-inventory" class="flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-transparent text-slate-400 hover:text-white hover:bg-slate-800 transition-smooth flex items-center justify-center gap-2">
                 <i class="fa-solid fa-boxes-stacked"></i> <span data-i18n="inventoryManagement">المخزون والمنتجات</span>
             </button>
         </div>
@@ -61,29 +67,29 @@
         <section id="seller-tab-delivery" class="space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-amber-500">
-                    <p class="text-[11px] text-slate-500 font-bold" data-i18n="pending">قيد الانتظار</p>
-                    <p class="text-2xl font-black text-amber-600 mt-1" id="statPending">0</p>
+                    <p class="text-[11px] text-slate-400 font-bold" data-i18n="pending">قيد الانتظار</p>
+                    <p class="text-2xl font-black text-amber-400 mt-1" id="statPending">0</p>
                 </div>
                 <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-sky-500">
-                    <p class="text-[11px] text-slate-500 font-bold" data-i18n="scheduled">مجدول</p>
-                    <p class="text-2xl font-black text-sky-600 mt-1" id="statScheduled">0</p>
+                    <p class="text-[11px] text-slate-400 font-bold" data-i18n="scheduled">مجدول</p>
+                    <p class="text-2xl font-black text-sky-400 mt-1" id="statScheduled">0</p>
                 </div>
                 <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-emerald-500">
-                    <p class="text-[11px] text-slate-500 font-bold" data-i18n="delivered">تم الإستلام</p>
-                    <p class="text-2xl font-black text-emerald-600 mt-1" id="statDelivered">0</p>
+                    <p class="text-[11px] text-slate-400 font-bold" data-i18n="delivered">تم الإستلام</p>
+                    <p class="text-2xl font-black text-emerald-400 mt-1" id="statDelivered">0</p>
                 </div>
                 <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-rose-500">
-                    <p class="text-[11px] text-slate-500 font-bold" data-i18n="refused">رفض الإستلام</p>
-                    <p class="text-2xl font-black text-rose-600 mt-1" id="statRefused">0</p>
+                    <p class="text-[11px] text-slate-400 font-bold" data-i18n="refused">رفض الإستلام</p>
+                    <p class="text-2xl font-black text-rose-400 mt-1" id="statRefused">0</p>
                 </div>
-                <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-indigo-600">
-                    <p class="text-[11px] text-slate-500 font-bold" data-i18n="dailyRevenue">المحصل اليومي</p>
-                    <p class="text-xl font-black text-indigo-700 mt-1"><span id="statRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
+                <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-indigo-500">
+                    <p class="text-[11px] text-slate-400 font-bold" data-i18n="dailyRevenue">المحصل اليومي</p>
+                    <p class="text-xl font-black text-indigo-300 mt-1"><span id="statRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
                 </div>
-                <div class="bg-emerald-50/50 glass-panel p-4 rounded-2xl border-r-4 border-r-teal-600">
-                    <p class="text-[11px] text-teal-800 font-bold" data-i18n="netTotalStat">المجموع الصافي</p>
-                    <p class="text-xl font-black text-teal-700 mt-1"><span id="statNetRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
-                    <p class="text-[10px] text-teal-600 font-semibold mt-0.5"><span data-i18n="deliveryLabel">التوصيل:</span> -<span id="statDeliveryFees">0</span> <span class="currencyUnit">د.م</span></p>
+                <div class="glass-panel p-4 rounded-2xl border-r-4 border-r-teal-500 bg-teal-950/20">
+                    <p class="text-[11px] text-teal-300 font-bold" data-i18n="netTotalStat">المجموع الصافي</p>
+                    <p class="text-xl font-black text-teal-400 mt-1"><span id="statNetRevenue">0</span> <span class="text-xs currencyUnit">د.م</span></p>
+                    <p class="text-[10px] text-teal-500 font-semibold mt-0.5"><span data-i18n="deliveryLabel">التوصيل:</span> -<span id="statDeliveryFees">0</span> <span class="currencyUnit">د.م</span></p>
                 </div>
             </div>
 
@@ -109,34 +115,34 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1">
                     <div class="glass-panel p-6 rounded-3xl sticky top-24">
-                        <h2 class="text-sm font-extrabold text-slate-900 mb-4 flex items-center gap-2.5">
-                            <span class="bg-indigo-50 text-indigo-600 p-2 rounded-xl text-xs"><i class="fa-solid fa-plus"></i></span> <span data-i18n="addNewOrder">إضافة طلب جديد</span>
+                        <h2 class="text-sm font-extrabold text-white mb-4 flex items-center gap-2.5">
+                            <span class="bg-indigo-500/20 text-indigo-400 p-2 rounded-xl text-xs"><i class="fa-solid fa-plus"></i></span> <span data-i18n="addNewOrder">إضافة طلب جديد</span>
                         </h2>
                         <form id="orderForm" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="selectProduct">اختر المنتج *</label>
-                                <select id="orderProductSelect" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></select>
+                                <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="selectProduct">اختر المنتج *</label>
+                                <select id="orderProductSelect" class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth"></select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="phoneNumber">رقم الهاتف *</label>
+                                <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="phoneNumber">رقم الهاتف *</label>
                                 <input type="tel" id="clientPhone" required placeholder="06XXXXXXXX" dir="ltr"
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth text-right">
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth text-right">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="address">العنوان *</label>
+                                <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="address">العنوان *</label>
                                 <textarea id="clientAddress" required rows="2" placeholder="الحي، الشارع، رقم المنزل..."
-                                    class="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" data-i18n-placeholder="addressPlaceholder"></textarea>
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-700 text-xs bg-slate-900 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-smooth" data-i18n-placeholder="addressPlaceholder"></textarea>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="price">الثمن</label>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="price">الثمن</label>
                                     <input type="number" id="orderPrice" required placeholder="130"
-                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:outline-none">
+                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-1.5" data-i18n="deliveryFee">التوصيل</label>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="deliveryFee">التوصيل</label>
                                     <input type="number" id="orderDeliveryFee" required value="20" placeholder="20"
-                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-xs font-bold bg-slate-50 focus:outline-none">
+                                        class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-white focus:outline-none">
                                 </div>
                             </div>
                             <button type="submit" id="submitBtn"
@@ -150,20 +156,20 @@
                 <div class="lg:col-span-2">
                     <div class="glass-panel p-6 rounded-3xl">
                         <div class="mb-5">
-                            <h2 class="text-sm font-extrabold text-slate-900 mb-3 flex items-center gap-2.5">
-                                <span class="bg-slate-100 text-slate-700 p-2 rounded-xl text-xs"><i class="fa-solid fa-list-check"></i></span> <span data-i18n="trackOrders">متابعة الطلبات</span>
+                            <h2 class="text-sm font-extrabold text-white mb-3 flex items-center gap-2.5">
+                                <span class="bg-slate-800 text-slate-300 p-2 rounded-xl text-xs"><i class="fa-solid fa-list-check"></i></span> <span data-i18n="trackOrders">متابعة الطلبات</span>
                             </h2>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
-                                <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-amber-500 text-white">
+                                <button onclick="setFilter('pending')" id="f-pending" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-amber-500 text-slate-950 font-black">
                                     <i class="fa-solid fa-clock"></i> <span data-i18n="pending">قيد الانتظار</span>
                                 </button>
-                                <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
+                                <button onclick="setFilter('scheduled')" id="f-scheduled" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-800 text-slate-300 hover:bg-slate-700">
                                     <i class="fa-solid fa-calendar"></i> <span data-i18n="scheduled">مجدولة</span>
                                 </button>
-                                <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
+                                <button onclick="setFilter('delivered')" id="f-delivered" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-800 text-slate-300 hover:bg-slate-700">
                                     <i class="fa-solid fa-check"></i> <span data-i18n="delivered">تم الإستلام</span>
                                 </button>
-                                <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-100 text-slate-600 hover:bg-slate-200">
+                                <button onclick="setFilter('refused')" id="f-refused" class="flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl shadow-xs transition-smooth bg-slate-800 text-slate-300 hover:bg-slate-700">
                                     <i class="fa-solid fa-xmark"></i> <span data-i18n="refused">رفض الإستلام</span>
                                 </button>
                             </div>
@@ -176,8 +182,8 @@
 
         <section id="seller-tab-inventory" class="space-y-4 hidden">
             <div class="flex flex-wrap items-center justify-between gap-3 glass-panel p-5 rounded-3xl">
-                <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked text-indigo-600"></i> <span data-i18n="inventoryTitle">إدارة المخزون والمنتجات</span>
+                <h2 class="text-sm font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-indigo-400"></i> <span data-i18n="inventoryTitle">إدارة المخزون والمنتجات</span>
                 </h2>
                 <div class="flex items-center gap-2.5">
                     <button onclick="openNewProductModal()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm transition-smooth">
@@ -192,84 +198,113 @@
         </section>
     </main>
 
-    <!-- Modals -->
-    <div id="price-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-extrabold text-slate-900" data-i18n="editProductTitle">تعديل تفاصيل المنتج</h3>
-                <button onclick="closePriceModal()" class="text-slate-400 hover:text-slate-700 text-lg">&times;</button>
+    <!-- نافذة تعديل طلب موجود -->
+    <div id="edit-order-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-extrabold text-white" data-i18n="editOrderTitle">✏️ تعديل تفاصيل الطلب</h3>
+                <button onclick="closeEditOrderModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+            </div>
+            <div class="space-y-3.5 text-xs">
+                <input type="hidden" id="edit-order-id">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="phoneNumber">رقم الهاتف *</label>
+                    <input id="edit-order-phone" type="tel" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white text-right" dir="ltr">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="address">العنوان *</label>
+                    <textarea id="edit-order-address" rows="2" class="w-full px-3.5 py-2.5 border border-slate-700 rounded-xl font-semibold bg-slate-800 text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="price">الثمن</label>
+                    <input id="edit-order-price" type="number" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
+                </div>
+            </div>
+            <div class="flex gap-2.5 pt-2">
+                <button onclick="saveEditedOrder()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition-smooth" data-i18n="saveBtn">حفظ التعديلات</button>
+                <button onclick="closeEditOrderModal()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نوافذ أخرى -->
+    <div id="price-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-extrabold text-white" data-i18n="editProductTitle">تعديل تفاصيل المنتج</h3>
+                <button onclick="closePriceModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
             </div>
             <div class="space-y-3.5 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="productName">اسم المنتج:</label>
-                    <input id="edit-name-input" type="text" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="productName">اسم المنتج:</label>
+                    <input id="edit-name-input" type="text" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="sellingPrice">سعر البيع</label>
-                    <input id="edit-price-input" type="number" step="0.5" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر البيع</label>
+                    <input id="edit-price-input" type="number" step="0.5" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="imageUrl">رابط صورة المنتج (URL):</label>
-                    <input id="edit-img-input" type="url" placeholder="https://..." class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-medium bg-slate-50 text-left" dir="ltr">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="imageUrl">رابط صورة المنتج (URL):</label>
+                    <input id="edit-img-input" type="url" placeholder="https://..." class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-medium bg-slate-800 text-white text-left" dir="ltr">
                 </div>
             </div>
             <div class="flex gap-2.5 pt-2">
                 <button onclick="savePriceChanges()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition-smooth" data-i18n="saveBtn">حفظ التعديلات</button>
-                <button onclick="closePriceModal()" class="px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
+                <button onclick="closePriceModal()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div id="new-product-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-extrabold text-slate-900" data-i18n="newProductTitle">➕ إضافة منتج جديد</h3>
-                <button onclick="closeNewProductModal()" class="text-slate-400 hover:text-slate-700 text-lg">&times;</button>
+    <div id="new-product-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-extrabold text-white" data-i18n="newProductTitle">➕ إضافة منتج جديد</h3>
+                <button onclick="closeNewProductModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
             </div>
             <div class="space-y-3.5 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="productName">اسم المنتج *:</label>
-                    <input id="new-prod-name" type="text" placeholder="مثال: مظلة جديدة" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="productName">اسم المنتج *:</label>
+                    <input id="new-prod-name" type="text" placeholder="مثال: مظلة جديدة" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="sellingPrice">سعر البيع الافتراضي *:</label>
-                    <input id="new-prod-price" type="number" value="130" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="sellingPrice">سعر البيع الافتراضي *:</label>
+                    <input id="new-prod-price" type="number" value="130" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="initialStock">الكمية الأولية *:</label>
-                    <input id="new-prod-stock" type="number" value="10" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="initialStock">الكمية الأولية *:</label>
+                    <input id="new-prod-stock" type="number" value="10" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="imageUrl">رابط صورة المنتج (URL):</label>
-                    <input id="new-prod-img" type="url" placeholder="https://..." class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-medium bg-slate-50 text-left" dir="ltr">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="imageUrl">رابط صورة المنتج (URL):</label>
+                    <input id="new-prod-img" type="url" placeholder="https://..." class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-medium bg-slate-800 text-white text-left" dir="ltr">
                 </div>
             </div>
             <div class="flex gap-2.5 pt-2">
                 <button onclick="handleNewProductSubmit()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition-smooth" data-i18n="addBtn">إضافة المنتج</button>
-                <button onclick="closeNewProductModal()" class="px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
+                <button onclick="closeNewProductModal()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <div id="stock-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-extrabold text-slate-900" data-i18n="addStockTitle">إضافة شحنة واردة</h3>
-                <button onclick="closeRestockModal()" class="text-slate-400 hover:text-slate-700 text-lg">&times;</button>
+    <div id="stock-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-extrabold text-white" data-i18n="addStockTitle">إضافة شحنة واردة</h3>
+                <button onclick="closeRestockModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
             </div>
             <div class="space-y-3.5 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="selectProduct">اختر المنتج:</label>
-                    <select id="restock-color-select" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-semibold bg-slate-50"></select>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="selectProduct">اختر المنتج:</label>
+                    <select id="restock-color-select" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-semibold bg-slate-800 text-white"></select>
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1" data-i18n="incomingQty">الكمية الواردة:</label>
-                    <input id="restock-qty-input" type="number" min="1" value="10" class="w-full h-11 px-3.5 border border-slate-200 rounded-xl font-bold bg-slate-50">
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="incomingQty">الكمية الواردة:</label>
+                    <input id="restock-qty-input" type="number" min="1" value="10" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
             </div>
             <div class="flex gap-2.5 pt-2">
                 <button onclick="handleRestockSubmit()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs shadow-md transition-smooth" data-i18n="addQtyBtn">إضافة الكمية</button>
-                <button onclick="closeRestockModal()" class="px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
+                <button onclick="closeRestockModal()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl font-bold text-xs transition-smooth" data-i18n="cancelBtn">إلغاء</button>
             </div>
         </div>
     </div>
@@ -306,6 +341,7 @@
                 addProductBtn: "إضافة منتج جديد",
                 addStockBtn: "إضافة شحنة واردة",
                 editProductTitle: "تعديل تفاصيل المنتج",
+                editOrderTitle: "تعديل تفاصيل الطلب",
                 productName: "اسم المنتج:",
                 sellingPrice: "سعر البيع",
                 imageUrl: "رابط صورة المنتج (URL):",
@@ -356,6 +392,7 @@
                 addProductBtn: "Nouveau Produit",
                 addStockBtn: "Ajouter du Stock",
                 editProductTitle: "Modifier le produit",
+                editOrderTitle: "Modifier la commande",
                 productName: "Nom du produit:",
                 sellingPrice: "Prix de vente",
                 imageUrl: "Lien de l'image (URL):",
@@ -406,6 +443,7 @@
                 addProductBtn: "Add New Product",
                 addStockBtn: "Add Incoming Stock",
                 editProductTitle: "Edit Product Details",
+                editOrderTitle: "Edit Order Details",
                 productName: "Product Name:",
                 sellingPrice: "Selling Price",
                 imageUrl: "Product Image URL:",
@@ -442,9 +480,9 @@
                 const btn = document.getElementById(`lang-${l}`);
                 if (btn) {
                     if (l === lang) {
-                        btn.className = "px-3 py-1 text-xs font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
+                        btn.className = "px-2 py-0.5 text-[11px] font-bold rounded-lg transition-smooth bg-indigo-600 text-white shadow-xs";
                     } else {
-                        btn.className = "px-3 py-1 text-xs font-bold rounded-lg transition-smooth text-slate-600 hover:text-slate-900";
+                        btn.className = "px-2.5 py-0.5 text-[11px] font-bold rounded-lg transition-smooth text-slate-400 hover:text-white";
                     }
                 }
             });
@@ -597,7 +635,7 @@
         function switchSellerTab(tab) {
             ['delivery', 'inventory'].forEach(t => {
                 document.getElementById(`seller-tab-${t}`).classList.add('hidden');
-                document.getElementById(`stab-${t}`).className = 'flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-transparent text-slate-600 hover:bg-slate-200 transition-smooth flex items-center justify-center gap-2';
+                document.getElementById(`stab-${t}`).className = 'flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-transparent text-slate-400 hover:text-white hover:bg-slate-800 transition-smooth flex items-center justify-center gap-2';
             });
             document.getElementById(`seller-tab-${tab}`).classList.remove('hidden');
             document.getElementById(`stab-${tab}`).className = 'flex-1 py-2.5 rounded-xl font-extrabold text-xs bg-indigo-600 text-white transition-smooth shadow-sm flex items-center justify-center gap-2';
@@ -606,19 +644,19 @@
         function setFilter(f) {
             currentFilter = f;
             const buttons = {
-                'pending': 'bg-amber-500 text-white shadow-sm',
-                'scheduled': 'bg-sky-600 text-white shadow-sm',
-                'delivered': 'bg-emerald-600 text-white shadow-sm',
-                'refused': 'bg-rose-600 text-white shadow-sm'
+                'pending': 'bg-amber-500 text-slate-950 font-black shadow-sm',
+                'scheduled': 'bg-sky-600 text-white font-black shadow-sm',
+                'delivered': 'bg-emerald-600 text-white font-black shadow-sm',
+                'refused': 'bg-rose-600 text-white font-black shadow-sm'
             };
 
             ['pending', 'scheduled', 'delivered', 'refused'].forEach(k => {
                 const btn = document.getElementById(`f-${k}`);
                 if (btn) {
                     if (k === f) {
-                        btn.className = `flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl transition-smooth font-bold text-xs ${buttons[k]}`;
+                        btn.className = `flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl transition-smooth text-xs ${buttons[k]}`;
                     } else {
-                        btn.className = 'flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl transition-smooth font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200';
+                        btn.className = 'flex items-center justify-center gap-1.5 py-3 px-3 rounded-xl transition-smooth font-bold text-xs bg-slate-800 text-slate-300 hover:bg-slate-700';
                     }
                 }
             });
@@ -632,6 +670,30 @@
             saveAllToSupabase();
             renderSellerOrders();
             updateSellerStats();
+        }
+
+        function openEditOrderModal(id) {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+            document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-phone').value = order.phone;
+            document.getElementById('edit-order-address').value = order.address;
+            document.getElementById('edit-order-price').value = order.price;
+            document.getElementById('edit-order-modal').classList.remove('hidden');
+        }
+        function closeEditOrderModal() {
+            document.getElementById('edit-order-modal').classList.add('hidden');
+        }
+        function saveEditedOrder() {
+            const id = document.getElementById('edit-order-id').value;
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+            order.phone = document.getElementById('edit-order-phone').value.trim();
+            order.address = document.getElementById('edit-order-address').value.trim();
+            order.price = parseFloat(document.getElementById('edit-order-price').value) || order.price;
+            closeEditOrderModal();
+            saveAllToSupabase();
+            renderSellerOrders();
         }
 
         function returnToCourier(id) {
@@ -698,7 +760,7 @@
             const filtered = orders.filter(o => o.status === currentFilter);
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-slate-400 text-xs font-semibold">${translations[currentLang].noOrders}</div>`;
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs font-semibold">${translations[currentLang].noOrders}</div>`;
                 return;
             }
 
@@ -707,7 +769,7 @@
                 if (order.status === 'delivered' && order.deliveredAt) {
                     const d = new Date(order.deliveredAt);
                     timeStr = `
-                        <div class="mt-2.5 pt-2.5 border-t border-emerald-100 text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
+                        <div class="mt-2.5 pt-2.5 border-t border-slate-800 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-calendar-check"></i>
                             <span>${d.toLocaleDateString()} - ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                         </div>
@@ -715,28 +777,31 @@
                 }
 
                 return `
-                <div class="border border-slate-200/70 rounded-2xl p-4 bg-white shadow-xs transition-smooth hover:shadow-md">
+                <div class="border border-slate-800 rounded-2xl p-4 bg-slate-900/80 shadow-md transition-smooth hover:border-slate-700">
                     <div class="flex justify-between items-start gap-2 mb-2">
                         <div>
-                            <span class="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
-                            <p class="font-bold text-slate-800 text-xs mt-2 flex items-center gap-1.5">
-                                <span class="text-rose-500">📍</span> ${order.address}
+                            <span class="text-[11px] bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-1 rounded-xl">${order.productName}</span>
+                            <p class="font-bold text-slate-200 text-xs mt-2 flex items-center gap-1.5">
+                                <span class="text-rose-400">📍</span> ${order.address}
                             </p>
                         </div>
-                        <button onclick="deleteOrder('${order.id}')" class="text-slate-300 hover:text-rose-600 transition-smooth p-1 text-sm"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="flex items-center gap-1">
+                            <button onclick="openEditOrderModal('${order.id}')" class="text-slate-400 hover:text-indigo-400 transition-smooth p-1.5 text-xs bg-slate-800 rounded-lg" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteOrder('${order.id}')" class="text-slate-400 hover:text-rose-400 transition-smooth p-1.5 text-xs bg-slate-800 rounded-lg" title="حذف"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-100 text-xs">
-                        <a href="tel:${order.phone}" class="font-bold text-indigo-600 hover:underline bg-indigo-50 px-2.5 py-1 rounded-lg" dir="ltr">📞 ${order.phone}</a>
-                        <span class="font-extrabold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">${order.price} ${translations[currentLang].currency}</span>
+                    <div class="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-800 text-xs">
+                        <a href="tel:${order.phone}" class="font-bold text-indigo-400 hover:underline bg-indigo-500/10 px-2.5 py-1 rounded-lg" dir="ltr">📞 ${order.phone}</a>
+                        <span class="font-extrabold text-white bg-slate-800 px-2.5 py-1 rounded-lg">${order.price} ${translations[currentLang].currency}</span>
                     </div>
                     ${timeStr}
                     ${order.status === 'refused' && order.refusalReason ? `
-                        <div class="mt-3 bg-rose-50 border border-rose-100 rounded-xl p-2.5 text-xs text-rose-800">
+                        <div class="mt-3 bg-rose-950/40 border border-rose-900/50 rounded-xl p-2.5 text-xs text-rose-300">
                             <strong>${translations[currentLang].refusalReasonLabel}</strong>${order.refusalReason}
                         </div>
                     ` : ''}
                     ${order.status === 'scheduled' ? `
-                        <div class="mt-3 bg-sky-50 border border-sky-100 rounded-xl p-2.5 text-xs text-sky-900 flex justify-between items-center">
+                        <div class="mt-3 bg-sky-950/40 border border-sky-900/50 rounded-xl p-2.5 text-xs text-sky-200 flex justify-between items-center">
                             <span>📅 ${translations[currentLang].scheduledDateLabel} ${order.scheduledDate} (${order.scheduledTime})</span>
                             <button onclick="returnToCourier('${order.id}')" class="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold transition-smooth">${translations[currentLang].returnBtn}</button>
                         </div>
@@ -749,17 +814,17 @@
             const list = document.getElementById('inventory-list');
             if (!list) return;
             list.innerHTML = colors.map(item => `
-                <div class="bg-white border border-slate-200/70 rounded-2xl p-4 flex items-center justify-between shadow-xs transition-smooth hover:shadow-md text-xs">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-md transition-smooth text-xs">
                     <div class="flex items-center gap-3">
-                        <img src="${item.img || 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100'}" class="w-12 h-12 rounded-xl object-cover shadow-xs border border-slate-200 flex-shrink-0" alt="صورة المنتج">
+                        <img src="${item.img || 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100'}" class="w-12 h-12 rounded-xl object-cover shadow-xs border border-slate-700 flex-shrink-0" alt="صورة المنتج">
                         <div>
-                            <div class="font-extrabold text-slate-900 text-sm">${item.name}</div>
-                            <div class="text-[11px] text-slate-500 font-semibold mt-0.5">${item.price} ${translations[currentLang].currency}</div>
+                            <div class="font-extrabold text-white text-sm">${item.name}</div>
+                            <div class="text-[11px] text-slate-400 font-semibold mt-0.5">${item.price} ${translations[currentLang].currency}</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2.5">
-                        <div class="font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl">${item.stock} ${translations[currentLang].units}</div>
-                        <button onclick="openPriceModal('${item.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-1.5 rounded-xl font-bold transition-smooth">تعديل</button>
+                        <div class="font-extrabold text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-xl">${item.stock} ${translations[currentLang].units}</div>
+                        <button onclick="openPriceModal('${item.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3.5 py-1.5 rounded-xl font-bold transition-smooth">تعديل</button>
                     </div>
                 </div>
             `).join('');
