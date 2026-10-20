@@ -437,6 +437,7 @@
             },
             en: {
                 storeTitle: "Seller Dashboard",
+                connected: "Connected to server with courier",
                 courierPage: "Courier Page",
                 copyLink: "Copy Link",
                 deliveryManagement: "Delivery Management",
@@ -575,13 +576,13 @@
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        sb.channel('public:app_state_seller_fast')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
+        // استخدام نظام الاستماع الفوري بدون إعادة تحميل الصفحة بالكامل
+        sb.channel('public:app_state_seller_realtime')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
                   colors = payload.new.payload.colors || DEFAULT_COLORS;
                   courierDebt = payload.new.payload.courierDebt || 0;
-                  populateProductDropdown();
                   renderSellerOrders();
                   renderInventoryList();
                   updateSellerStats();
@@ -590,12 +591,12 @@
           .subscribe();
 
         loadDataFromSupabase();
-        setInterval(loadDataFromSupabase, 2000);
         changeLanguage(currentLang);
 
         function populateProductDropdown() {
             const select = document.getElementById('orderProductSelect');
             if (!select) return;
+            const currentSelectedVal = select.value;
             select.innerHTML = '';
             colors.forEach(c => {
                 const opt = document.createElement('option');
@@ -604,6 +605,7 @@
                 opt.textContent = `${c.name} (متوفر: ${c.stock}) - ${c.price} ${translations[currentLang].currency}`;
                 select.appendChild(opt);
             });
+            if (currentSelectedVal) select.value = currentSelectedVal;
 
             select.onchange = updateCalculatedPrice;
             updateCalculatedPrice();
@@ -657,7 +659,6 @@
                 orderForm.reset();
                 document.getElementById('orderQty').value = '1';
                 document.getElementById('orderDeliveryFee').value = '20';
-                populateProductDropdown();
                 saveAllToSupabase();
                 renderSellerOrders();
                 updateSellerStats();
@@ -809,7 +810,6 @@
 
             container.innerHTML = filtered.map(order => {
                 let timeStr = '';
-                // إظهار التاريخ والوقت في الطلبات المسلمة أو المرفوضة
                 const actionTime = order.deliveredAt || order.createdAt;
                 if ((order.status === 'delivered' || order.status === 'refused') && actionTime) {
                     const d = new Date(actionTime);
@@ -849,7 +849,7 @@
                     ${timeStr}
                     ${order.status === 'refused' && order.refusalReason ? `
                         <div class="mt-3 bg-rose-950/40 border border-rose-900/50 rounded-xl p-2.5 text-xs text-rose-300">
-                            <strong>${translations[currentLang].refusalReasonLabel}</strong>${order.refusalReason}
+                            <strong>${translations[currentLang].refusalReasonLabel}</strong> ${order.refusalReason}${order.courierName ? `<div class="mt-1 text-[11px] text-rose-400">🛵 اللفرور: ${order.courierName}</div>` : ''}
                         </div>
                     ` : ''}
                     ${order.status === 'scheduled' ? `
