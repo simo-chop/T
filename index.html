@@ -209,9 +209,9 @@
         </section>
     </main>
 
-    <!-- نافذة تعديل طلب (تتضمن الآن اختيار المنتج) -->
+    <!-- نافذة تعديل طلب (تتضمن الآن اختيار المنتج، الكمية، العنوان، الهاتف، الثمن، وثمن التوصيل) -->
     <div id="edit-order-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
+        <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                 <h3 class="text-sm font-extrabold text-white" data-i18n="editOrderTitle">✏️ تعديل تفاصيل الطلب</h3>
                 <button onclick="closeEditOrderModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
@@ -237,6 +237,10 @@
                 <div>
                     <label class="block font-bold text-slate-300 mb-1" data-i18n="price">الثمن الإجمالي</label>
                     <input id="edit-order-price" type="number" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="deliveryFee">مصاريف التوصيل</label>
+                    <input id="edit-order-delivery-fee" type="number" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
             </div>
             <div class="flex gap-2.5 pt-2">
@@ -441,6 +445,7 @@
             },
             en: {
                 storeTitle: "Seller Dashboard",
+                connected: "Connected to server with courier",
                 courierPage: "Courier Page",
                 copyLink: "Copy Link",
                 deliveryManagement: "Delivery Management",
@@ -612,7 +617,6 @@
             select.onchange = updateCalculatedPrice;
             updateCalculatedPrice();
 
-            // تعبئة قائمة المنتجات في نافذة التعديل أيضاً
             const editSelect = document.getElementById('edit-order-product');
             if (editSelect) {
                 editSelect.innerHTML = select.innerHTML;
@@ -750,6 +754,7 @@
             document.getElementById('edit-order-phone').value = order.phone;
             document.getElementById('edit-order-address').value = order.address;
             document.getElementById('edit-order-price').value = order.price;
+            document.getElementById('edit-order-delivery-fee').value = order.deliveryFee !== undefined ? order.deliveryFee : 20;
             document.getElementById('edit-order-modal').classList.remove('hidden');
         }
         function closeEditOrderModal() {
@@ -769,6 +774,7 @@
             order.phone = document.getElementById('edit-order-phone').value.trim();
             order.address = document.getElementById('edit-order-address').value.trim();
             order.price = parseFloat(document.getElementById('edit-order-price').value) || order.price;
+            order.deliveryFee = parseFloat(document.getElementById('edit-order-delivery-fee').value) || 20;
 
             closeEditOrderModal();
             saveAllToSupabase();
