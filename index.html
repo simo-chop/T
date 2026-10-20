@@ -209,7 +209,7 @@
         </section>
     </main>
 
-    <!-- نافذة تعديل طلب -->
+    <!-- نافذة تعديل طلب (تتضمن الآن اختيار المنتج) -->
     <div id="edit-order-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -218,6 +218,10 @@
             </div>
             <div class="space-y-3.5 text-xs">
                 <input type="hidden" id="edit-order-id">
+                <div>
+                    <label class="block font-bold text-slate-300 mb-1" data-i18n="selectProduct">اختر المنتج *</label>
+                    <select id="edit-order-product" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white focus:outline-none"></select>
+                </div>
                 <div>
                     <label class="block font-bold text-slate-300 mb-1" data-i18n="quantityLabel">العدد (الكمية)</label>
                     <input id="edit-order-qty" type="number" min="1" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
@@ -437,7 +441,6 @@
             },
             en: {
                 storeTitle: "Seller Dashboard",
-                connected: "Connected to server with courier",
                 courierPage: "Courier Page",
                 copyLink: "Copy Link",
                 deliveryManagement: "Delivery Management",
@@ -576,7 +579,6 @@
             await sb.from('app_state').upsert({ id: 'simo_store_data', payload });
         }
 
-        // استخدام نظام الاستماع الفوري بدون إعادة تحميل الصفحة بالكامل
         sb.channel('public:app_state_seller_realtime')
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
@@ -609,6 +611,13 @@
 
             select.onchange = updateCalculatedPrice;
             updateCalculatedPrice();
+
+            // تعبئة قائمة المنتجات في نافذة التعديل أيضاً
+            const editSelect = document.getElementById('edit-order-product');
+            if (editSelect) {
+                editSelect.innerHTML = select.innerHTML;
+                editSelect.onchange = updateEditCalculatedPrice;
+            }
         }
 
         function updateCalculatedPrice() {
@@ -625,9 +634,28 @@
             }
         }
 
+        function updateEditCalculatedPrice() {
+            const select = document.getElementById('edit-order-product');
+            const qtyInput = document.getElementById('edit-order-qty');
+            const priceInput = document.getElementById('edit-order-price');
+            if (!select || !qtyInput || !priceInput) return;
+
+            const selectedOpt = select.options[select.selectedIndex];
+            if (selectedOpt) {
+                const unitPrice = parseFloat(selectedOpt.dataset.price) || 0;
+                const qty = parseInt(qtyInput.value) || 1;
+                priceInput.value = unitPrice * qty;
+            }
+        }
+
         const orderQtyInput = document.getElementById('orderQty');
         if (orderQtyInput) {
             orderQtyInput.oninput = updateCalculatedPrice;
+        }
+
+        const editQtyInput = document.getElementById('edit-order-qty');
+        if (editQtyInput) {
+            editQtyInput.oninput = updateEditCalculatedPrice;
         }
 
         const orderForm = document.getElementById('orderForm');
@@ -717,6 +745,7 @@
             const order = orders.find(o => o.id === id);
             if (!order) return;
             document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-product').value = order.productId || (colors[0] ? colors[0].id : '');
             document.getElementById('edit-order-qty').value = order.quantity || 1;
             document.getElementById('edit-order-phone').value = order.phone;
             document.getElementById('edit-order-address').value = order.address;
@@ -730,10 +759,17 @@
             const id = document.getElementById('edit-order-id').value;
             const order = orders.find(o => o.id === id);
             if (!order) return;
+
+            const productId = document.getElementById('edit-order-product').value;
+            const product = colors.find(c => c.id === productId);
+
+            order.productId = productId;
+            order.productName = product ? product.name : order.productName;
             order.quantity = parseInt(document.getElementById('edit-order-qty').value) || 1;
             order.phone = document.getElementById('edit-order-phone').value.trim();
             order.address = document.getElementById('edit-order-address').value.trim();
             order.price = parseFloat(document.getElementById('edit-order-price').value) || order.price;
+
             closeEditOrderModal();
             saveAllToSupabase();
             renderSellerOrders();
