@@ -38,9 +38,8 @@
                 <div class="text-left">
                     <h1 class="text-sm font-black tracking-wide text-white" data-i18n="storeTitle">لوحة تحكم البائع</h1>
                 </div>
-                <div class="bg-indigo-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-base font-black flex-shrink-0">
-                    SC
-                </div>
+                <!-- عرض اللوغو مع بديل تلقائي إذا لم يتم العثور على الملف محلياً -->
+                <img src="logo.png" alt="Simo Chop Logo" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100';" class="h-10 w-10 rounded-xl shadow-md object-cover flex-shrink-0 border border-slate-700">
             </div>
         </div>
 
@@ -122,22 +121,19 @@
                         </h2>
                         <form id="orderForm" class="space-y-4">
                             
-                            <!-- قسم اختيار المنتجات والألوان والكميات -->
                             <div>
                                 <div class="flex justify-between items-center mb-2">
-                                    <label class="block text-xs font-bold text-slate-300">المنتجات والكميات *</label>
+                                    <label class="block text-xs font-bold text-slate-300">المنتجات والألوان والكميات *</label>
                                     <button type="button" onclick="addOrderItemRow()" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-bold bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/30">
                                         <i class="fa-solid fa-plus"></i> إضافة منتج آخر
                                     </button>
                                 </div>
-                                <div id="orderItemsContainer" class="space-y-2.5">
-                                    <!-- يتم إدراج صفوف المنتجات ديناميكياً هنا -->
-                                </div>
+                                <div id="orderItemsContainer" class="space-y-2.5"></div>
                             </div>
 
                             <div class="grid grid-cols-1 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="price">الثمن الإجمالي للمنتجات</label>
+                                    <label class="block text-xs font-bold text-slate-300 mb-1.5" data-i18n="price">الثمن الإجمالي</label>
                                     <input type="number" id="orderPrice" required placeholder="130"
                                         class="w-full px-3.5 py-3 rounded-xl border border-slate-700 text-xs font-bold bg-slate-900 text-emerald-400 focus:outline-none">
                                 </div>
@@ -223,7 +219,7 @@
             <div class="space-y-3.5 text-xs">
                 <input type="hidden" id="edit-order-id">
                 <div>
-                    <label class="block font-bold text-slate-300 mb-1">اسم المنتج والكمية</label>
+                    <label class="block font-bold text-slate-300 mb-1">المنتج والكمية</label>
                     <input id="edit-order-product-text" type="text" class="w-full h-11 px-3.5 border border-slate-700 rounded-xl font-bold bg-slate-800 text-white">
                 </div>
                 <div>
@@ -441,6 +437,7 @@
             },
             en: {
                 storeTitle: "Seller Dashboard",
+                connected: "Connected to server with courier",
                 courierPage: "Courier Page",
                 copyLink: "Copy Link",
                 deliveryManagement: "Delivery Management",
@@ -541,14 +538,14 @@
         const { createClient } = supabase;
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // قائمة المظلات مع صور حقيقية وموثوقة لكل لون لضمان ظهورها فوراً
         const DEFAULT_COLORS = [
-            { id: 'black', name: 'مظلة باللون الأسود', stock: 117, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'black_2', name: 'منيطة باللون الأسود', stock: 120, price: 120, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'white_2', name: 'منيطة باللون الأبيض', stock: 50, price: 120, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'blue', name: 'مظلة باللون الأزرق', stock: 97, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'gray', name: 'مظلة باللون الرمادي', stock: 78, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'pink', name: 'مظلة باللون الوردي', stock: 65, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' },
-            { id: 'green', name: 'مظلة باللون الزيتي', stock: 53, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' }
+            { id: 'beige', name: 'مظلة باللون البيج', stock: 100, price: 130, img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100' },
+            { id: 'blue', name: 'مظلة باللون الأزرق', stock: 95, price: 130, img: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=100' },
+            { id: 'green', name: 'مظلة باللون الأخضر', stock: 90, price: 130, img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=100' },
+            { id: 'gray', name: 'مظلة باللون الرمادي', stock: 85, price: 130, img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' },
+            { id: 'pink', name: 'مظلة باللون الوردي', stock: 80, price: 130, img: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=100' },
+            { id: 'black', name: 'مظلة باللون الأسود', stock: 110, price: 130, img: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100' }
         ];
 
         let orders = [];
@@ -556,8 +553,6 @@
         let courierDebt = 0;
         let currentFilter = 'pending';
         let editingColorId = null;
-
-        // مصفوفة المنتجات المختارة في نموذج إضافة طلب جديد
         let currentOrderItems = [{ productId: '', qty: 1 }];
 
         async function loadDataFromSupabase() {
@@ -658,7 +653,6 @@
             orderForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 
-                // تجميع أسماء المنتجات والكميات في نص واحد منسق (مثل: مظلة باللون الأسود (عدد: 2)، منيطة باللون الأبيض (عدد: 1))
                 let productSummaryParts = [];
                 currentOrderItems.forEach(item => {
                     const product = colors.find(c => c.id === item.productId);
@@ -673,7 +667,7 @@
                     id: 'ORD_' + Date.now(),
                     productId: currentOrderItems.length > 0 ? currentOrderItems[0].productId : '',
                     productName: productNameCombined,
-                    items: JSON.parse(JSON.stringify(currentOrderItems)), // حفظ تفاصيل المنتجات للاستخدام
+                    items: JSON.parse(JSON.stringify(currentOrderItems)),
                     quantity: currentOrderItems.reduce((sum, i) => sum + i.qty, 0),
                     phone: document.getElementById('clientPhone').value.trim(),
                     address: document.getElementById('clientAddress').value.trim(),
@@ -795,7 +789,7 @@
 
         function openCourierPage() { window.open(getCourierUrl(), '_blank'); }
         function copyCourierLink() {
-            navigator.clipboard.writeText(getCourierUrl()).then(() => alert(translations[currentLang].copyLink + ' !'));
+            navigator.clipboard.writeText(getCCourierUrl()).then(() => alert(translations[currentLang].copyLink + ' !'));
         }
 
         function updateSellerStats() {
@@ -904,7 +898,7 @@
             list.innerHTML = colors.map(item => `
                 <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-md transition-smooth text-xs">
                     <div class="flex items-center gap-3">
-                        <img src="${item.img || 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100'}" class="w-12 h-12 rounded-xl object-cover shadow-xs border border-slate-700 flex-shrink-0" alt="صورة المنتج">
+                        <img src="${item.img || 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100'}" onerror="this.src='https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=100';" class="w-12 h-12 rounded-xl object-cover shadow-xs border border-slate-700 flex-shrink-0" alt="صورة المنتج">
                         <div>
                             <div class="font-extrabold text-white text-sm">${item.name}</div>
                             <div class="text-[11px] text-slate-400 font-semibold mt-0.5">${item.price} ${translations[currentLang].currency}</div>
