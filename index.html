@@ -513,11 +513,9 @@
                 }
             });
 
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el =>.target = ...);
-
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[lang][key]) {
+                if (translations[lang] && translations[lang][key]) {
                     el.placeholder = translations[lang][key];
                 }
             });
@@ -538,7 +536,6 @@
         const { createClient } = supabase;
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // قائمة الصور الصحيحة التي طابقتها في مستودعك
         const DEFAULT_COLORS = [
             { id: 'beige', name: 'مظلة باللون البيج', stock: 100, price: 130, img: 'beige.jpg' },
             { id: 'blue', name: 'مظلة باللون الأزرق', stock: 95, price: 130, img: 'blue.jpg' },
@@ -560,8 +557,7 @@
                 const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
                 if (data && data.payload) {
                     orders = data.payload.orders || [];
-                    // فرض تحديث المنتجات بالصور الجديدة وإجبار السيرفر على اعتمادها
-                    colors = DEFAULT_COLORS; 
+                    colors = DEFAULT_COLORS;
                     courierDebt = data.payload.courierDebt || 0;
                     if (currentOrderItems.length > 0 && !currentOrderItems[0].productId && colors.length > 0) {
                         currentOrderItems[0].productId = colors[0].id;
