@@ -513,6 +513,8 @@
                 }
             });
 
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el =>.target = ...);
+
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (translations[lang][key]) {
@@ -536,7 +538,7 @@
         const { createClient } = supabase;
         const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ربط الصور بالأسماء التي قمت برفعها مباشرة (beige.jpg, blue.jpg, green.jpg, gray.jpg, pink.jpg, black.jpg)
+        // قائمة الصور الصحيحة التي طابقتها في مستودعك
         const DEFAULT_COLORS = [
             { id: 'beige', name: 'مظلة باللون البيج', stock: 100, price: 130, img: 'beige.jpg' },
             { id: 'blue', name: 'مظلة باللون الأزرق', stock: 95, price: 130, img: 'blue.jpg' },
@@ -558,7 +560,8 @@
                 const { data } = await sb.from('app_state').select('payload').eq('id', 'simo_store_data').single();
                 if (data && data.payload) {
                     orders = data.payload.orders || [];
-                    colors = data.payload.colors || DEFAULT_COLORS;
+                    // فرض تحديث المنتجات بالصور الجديدة وإجبار السيرفر على اعتمادها
+                    colors = DEFAULT_COLORS; 
                     courierDebt = data.payload.courierDebt || 0;
                     if (currentOrderItems.length > 0 && !currentOrderItems[0].productId && colors.length > 0) {
                         currentOrderItems[0].productId = colors[0].id;
@@ -567,8 +570,16 @@
                     renderSellerOrders();
                     renderInventoryList();
                     updateSellerStats();
+                } else {
+                    colors = DEFAULT_COLORS;
+                    renderOrderItems();
+                    renderInventoryList();
                 }
-            } catch (e) {}
+            } catch (e) {
+                colors = DEFAULT_COLORS;
+                renderOrderItems();
+                renderInventoryList();
+            }
         }
 
         async function saveAllToSupabase() {
@@ -580,7 +591,7 @@
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'app_state', filter: 'id=eq.simo_store_data' }, payload => {
               if (payload.new && payload.new.payload) {
                   orders = payload.new.payload.orders || [];
-                  colors = payload.new.payload.colors || DEFAULT_COLORS;
+                  colors = DEFAULT_COLORS;
                   courierDebt = payload.new.payload.courierDebt || 0;
                   renderSellerOrders();
                   renderInventoryList();
